@@ -16,62 +16,99 @@
 - date of events
 
 # Doc
+Useful links:
+- https://www.oxagile.com/article/load-balancing-of-websocket-connections/#:~:text=The%20problem%20of%20load%20balancing,problem%20is%20crucial%20for%20performance.
 
-## Presentazione
-L'applicazione myTicket è una piattaforma di compravendita di biglietti per concerti musicali. Essa permette agli utenti di acquistare biglietti per i concerti presenti nella piattaforma. Inoltre nella sezione Bid è possibile avere delle mini-aste per comprare biglietti all'ultimo minuto.
-
-## Actors
-Ci sono 3 tipi diversi di attori:
-- Admin
-- Manager
-- Utenti
-
-### Admin
-L'amministratore ha il completo controllo sulla piattaforma, può creare eventi, eliminarli e modificarli. 
-
-### Manager
-Il manager può eseguire le seguenti operazioni:
-- login/logout
-- registrarsi alla piattaforma
-- aggiungere un evento
-- eliminare uno dei suoi eventi
-- modificare i suoi eventi
-- creare un'asta per uno dei suoi eventi
-- chiudere un'asta per uno dei suoi eventi
-
-### User
-Lo user può eseguire le seguenti operazioni:
-- login/logout
-- registrarsi alla piattaforma
-- acquistare un biglietto
-- navigare tra i concerti
-- cercare un evento in particolare
-- creare un'asta per uno dei biglietti che possiede
-- chiudere un'asta per uno dei biglietti che possiede
-
-### Development
-- **SW**: Server Web (Java Glassfish o Spring)
-- **EMN**: Erlang Master Node
-- **EWN**: Erlang Worker Node
-- **MNDB**: MnesiaDB
-- **MODB**: MongoDB
-- **RDDB**: RedisDB
-
-### Idee
-Gestione di login, registrazione e logout con un semplice server web in java.
-
-### Aste
-- Creazione asta:
-1. Utente invia richiesta SW, il server web lo autentifica e gli risponde con il codice univoco dell'asta.
-2. L'asta viene registrata dal master node, inserisce una nuova entry nel db e genera un worker node su entrambe le macchine. gestendo anche la consistenza nel db.
-
-- Iscrizione asta:
-1. Utente invia iscrizione asta al SW, il SW lo autentifica e lo registra all'asta corrente inviando una richiesta al master node restituisce un token di autenticazione.
-2. con questo token il client invia richieste tramite websocket a erlang.
+- https://stackoverflow.com/questions/66059636/chat-room-in-erlang-with-cowboy-and-websocket
 
 
+# OPERAZIONI
+1. login
+2. logout
+3. registrazione
+4. aggiunta di un biglietto
+5. eliminazione di un biglietto
+6. ricerca di un biglietto
+7. creazione di un'asta
+8. join di un'asta
+9. vincita di un'asta
+10. puntata per un'asta
+11. chiusura di un'asta
 
+### 1-Login
+La registrazione avviene tramite mail e password. La password viene inviata in chiaro (si spera sotto TLS).
 
+Request: /login (POST)
+body: 
+{
+    "mail": ,
+    "password": 
+}
+
+Il server restituisce un JWT oppure l'objectId che viene utilizzato per le richieste future.
+
+### 2-Logout
+L'utente esce dall'applicazione, viene cancellato dal local-storage il suo token/ID.
+
+Request: /logout (GET)
+
+### 3-Registrazione
+L'utente si registra tramite un form inserendo i campi:
+
+- Nome
+- Cognome
+- Data di nascita
+- mail
+- password
+
+Request: /register (POST)
+body:
+{
+    "name",
+    "surname",
+    "date",
+    "mail",
+    "password"
+}
+
+Dopodichè il client viene redirectato alla home.
+
+### 4-Aggiunta di un biglietto
+L'utente tramite un form può inserire un nuovo biglietto, le informazioni necessarie saranno:
+
+- artista
+- data
+- luogo
+- città
+- stato
+- costo di partenza
+- numero di biglietti
+
+Request: /ticket (POST)
+
+body
+{
+    artist
+    date
+    place
+    city
+    state
+    startingPrice
+    numbers
+}
+
+### 5-Eliminazion ticket
+Un utente che possiede un biglietto può decidere di eliminarlo uno o più
+
+Request: /ticket/<ticketID> (DELETE)
+
+### 6-Ricerca biglietto
+Un utente può cercare un biglietto, questo avviene sul campo titolo, se non viene specificato durante la creazione, il titolo è l'insieme di artista, luogo, città e data.
+
+Request: /ticket?title= (GET)
+
+### 7-Creazione Asta
+Il proprietario di un biglietto può creare un'asta per uno dei suoi biglietti. Può settare una durata e aspettare che qualcuno offra. 
 
 
 # Doc for presentation
