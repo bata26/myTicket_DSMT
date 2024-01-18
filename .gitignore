@@ -1,2 +1,5 @@
 env/
 rebar3
+target/
+rqlite-java/
+.vscode

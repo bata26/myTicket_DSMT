@@ -21,6 +21,35 @@ Useful links:
 
 - https://stackoverflow.com/questions/66059636/chat-room-in-erlang-with-cowboy-and-websocket
 
+# DB
+4 Tables (Sqlite3):
+- User {
+    id
+    username
+    password
+}
+- Auction {
+    id
+    ticket_id : FK Ticket.id
+    final_bid
+    winner_id : FK User.id
+}
+- Ticket {
+    id
+    owner_id : FK User.id
+    title
+    date
+    hour
+    city
+}
+- Bid {
+    id
+    auction_id : FK Auction.id
+    user_id : FK User.id
+    ts
+    amount
+}
+
 
 # OPERAZIONI
 1. login
@@ -142,3 +171,7 @@ myTicket is a platform where users can buy and sell ticket for events. Each user
 
 ### Erlang Usage
 About Erlang, each node will have a erlang process, called master node. The master node will create a new process, called worker node for each auction. This is going to happen on all physical node. In this way each worker node can communicate with his respective worker node to exchange info about last bids and auction evolution. Only masters node will communicate with Java Spring Web Server.
+
+
+docker container:
+docker run  -p 4001:4001 -p 4002:4002 -v rqlite-dir:/rqlite/file rqlite/rqlite -node-id 1
