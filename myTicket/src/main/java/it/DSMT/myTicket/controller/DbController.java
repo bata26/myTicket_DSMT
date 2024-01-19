@@ -44,10 +44,11 @@ public  class DbController {
         results = connection.Execute("CREATE TABLE IF NOT EXISTS ticket (\n" +
                 "id integer not null primary key autoincrement,\n" +
                 "title text,\n" +
-                "date date,\n" +
+                "date DATE,\n" +
                 "hour integer,\n" +
                 "city text,\n" +
                 "owner_id integer,\n" +
+                "artist text,\n" +
                 "foreign key (owner_id) references user(id)\n" +
                 ");");
         System.out.println(results.toString());

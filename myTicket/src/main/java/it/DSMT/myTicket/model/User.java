@@ -1,4 +1,6 @@
 package it.DSMT.myTicket.model;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.rqlite.NodeUnavailableException;
 import it.DSMT.myTicket.controller.DbController;
 import com.rqlite.Rqlite;
@@ -26,7 +28,7 @@ public class User {
         DbController.getInstance().getConnection().Execute("INSERT INTO user(username, password) values( '" + this.username + "' , '" + this.password + "')");
     }
 
-    public boolean login() throws  NodeUnavailableException{
+    public int login() throws  NodeUnavailableException{
         QueryResults res = DbController.getInstance().getConnection().Query("SELECT * FROM user where username = '" + this.username + "' and password = '" + this.password + "'" , Rqlite.ReadConsistencyLevel.STRONG);
         System.out.println("RES : " + res.results[0]);
 
@@ -34,12 +36,21 @@ public class User {
             QueryResults.Result result = res.results[0];
             if (result.error == null || result.error.isEmpty()) {
                 if (result.values != null && result.values.length > 0 && result.values[0].length > 0) {
-                    return true;
-                } else {
+                    return User.getUserIDFromQueryResult(res);
                 }
             }
         }
 
-        return false;
+        return -1;
+    }
+    
+    private static int getUserIDFromQueryResult(QueryResults res){
+        Gson gson = new Gson();
+        String json = gson.toJson(res);
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+        int id = jsonObject.getAsJsonArray("results")
+            .get(0).getAsJsonObject()
+            .getAsJsonArray("values").get(0).getAsJsonArray().get(0).getAsInt();
+        return id;
     }
 }

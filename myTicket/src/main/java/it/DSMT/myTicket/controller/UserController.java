@@ -14,15 +14,15 @@ public class UserController {
         }
     }
 
-    public static boolean loginUser(String username, String password) throws NodeUnavailableException{
+    public static int loginUser(String username, String password) throws NodeUnavailableException{
         User user = new User(username, password);
-        boolean loginResult = false;
+        int userID = -1;
         try{
-            loginResult =  user.login();
+            userID = user.login();
         } catch (NodeUnavailableException e){
             throw e;
         }
-        return loginResult;
+        return userID;
     }
 
 }

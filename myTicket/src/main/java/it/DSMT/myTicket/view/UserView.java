@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import it.DSMT.myTicket.controller.UserController;
+import it.DSMT.myTicket.dto.LoginDTO;
+
 import org.springframework.http.HttpStatus;
 
 @Controller
@@ -26,18 +28,20 @@ public class UserView {
 
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<String> login(@RequestBody User user){
+    public ResponseEntity<LoginDTO> login(@RequestBody User user){
+        LoginDTO login = new LoginDTO();
         try{
-            boolean loginResult;
-            loginResult = UserController.loginUser(user.getUsername(), user.getPassword());
-            if (loginResult){
-                return new ResponseEntity<>("Correctly logged in", HttpStatus.OK);
+            int userID;
+            userID = UserController.loginUser(user.getUsername(), user.getPassword());
+            login.setUserID(userID);
+            if (userID != -1){
+                return ResponseEntity.ok(login);
             }else{
-                return new ResponseEntity<>("ERROR" , HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity(null , HttpStatus.UNAUTHORIZED);
             }
         } catch (NodeUnavailableException e){
             System.out.println("[USER CONTROLLER] Impossible to login");
-            return new ResponseEntity<>("ERROR" , HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity(null , HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
