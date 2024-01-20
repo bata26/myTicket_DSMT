@@ -1,5 +1,7 @@
 package it.DSMT.myTicket.view;
 
+import it.DSMT.myTicket.dto.ActiveTicketDTO;
+import it.DSMT.myTicket.dto.ActiveTicketListDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,8 +9,10 @@ import org.springframework.stereotype.Controller;
 
 import com.rqlite.NodeUnavailableException;
 
+import it.DSMT.myTicket.controller.AuctionController;
 import it.DSMT.myTicket.controller.TicketController;
 import it.DSMT.myTicket.model.Ticket;
+import it.DSMT.myTicket.dto.ActiveAuctionListDTO;
 import it.DSMT.myTicket.dto.TicketDTO;
 
 @Controller
@@ -61,5 +65,32 @@ public class TicketView {
             return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/ticket/active")
+    public ResponseEntity<ActiveTicketListDTO> getActiveTickets(){
+        ActiveTicketListDTO response = new ActiveTicketListDTO();
+        try{
+            response.setTickets(TicketController.getActiveTickets());
+        } catch (NodeUnavailableException e){
+            System.out.println("[AUCTION VIEW] Impossible to get active auction");
+            return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/ticket/{id_ticket}")
+    public ResponseEntity<Ticket> getOne(@PathVariable("id_ticket") int idTicket){
+        Ticket ticket = new Ticket();
+        try{
+            ticket = TicketController.getOneTicket(idTicket);
+        } catch (NodeUnavailableException e){
+            System.out.println("[TICKET VIEW] Impossible to remove ticket");
+            return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            System.out.println("[TICKET VIEW] Impossible to remove ticket because ticket doesn't exists");
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(ticket);
     }
 }

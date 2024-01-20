@@ -41,9 +41,9 @@
             }
             return true;
         }
-        async function fetchActiveTickets() {
+        async function fetchTickets() {
             // fill the ticket list
-            const TICKET_ENDPOINT = "http://localhost:8080/ticket/active";
+            const TICKET_ENDPOINT = "http://localhost:8080/tickets";
             let res = {};
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {
@@ -55,6 +55,15 @@
                     alert("Impossble to fetch tickets");
                 });
             return res;
+        }
+
+        function cleanTicketsList() {
+            const column = document.getElementById("home-main-col");
+
+            // Rimuovi tutti gli elementi all'interno della colonna
+            while (column.firstChild) {
+                column.removeChild(column.firstChild);
+            }
         }
 
         function fillTicketsList(tickets) {
@@ -75,7 +84,7 @@
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-body-secondary"><b>${ticket.artist}</b></h6>
                         <p class="card-text">${ticket.city} , ${ticket.date} at ${ticket.hour}</p>
-                        <button type="button" class="btn btn-outline-primary">Auction Details</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="redirectToDetailsPage('${ticket.id}')">Details</button>
                     </div>
                     <br>
                 `;
@@ -84,11 +93,17 @@
                 homeMainCol.appendChild(cardElement);
             });
         }
+
+        function redirectToDetailsPage(ticketID) {
+            localStorage.setItem("ticketID" , ticketID);
+            window.location.href = "ticket-details.html";
+        }
+
         async function setupPage() {
             if (!checkIfIsLogged()) {
                 alert("Login to view content");
             }
-            const responseData = await fetchActiveTickets();
+            const responseData = await fetchTickets();
             fillTicketsList(responseData);
         }
     </script>
@@ -152,5 +167,30 @@
         </div>
     </div>
 </body>
+<script>
+    const loginFormID = "home-form";
+    const LOGIN_ENDPOINT = "http://localhost:8080/ticket"
+    document.getElementById(loginFormID).addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const params = {
+            "title": document.getElementById("home-search").value,
+        }
+
+        // Make Axios request
+        axios.get(LOGIN_ENDPOINT, { params: params })
+            .then(response => {
+                console.log("Success:", response.data);
+                cleanTicketsList();
+                if (response.data["tickets"] !== null){
+                    fillTicketsList(response.data);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Impossble to log in");
+            });
+    });
+</script>
 
 </html>

@@ -1,6 +1,10 @@
 package it.DSMT.myTicket.controller;
 import java.time.LocalDate;
 import com.rqlite.NodeUnavailableException;
+
+import it.DSMT.myTicket.dto.ActiveAuctionDTO;
+import it.DSMT.myTicket.dto.ActiveTicketDTO;
+import it.DSMT.myTicket.model.Auction;
 import it.DSMT.myTicket.model.Ticket;
 import java.util.List;
 
@@ -30,6 +34,25 @@ public class TicketController {
         try{
             return Ticket.getMany(title);
         } catch (NodeUnavailableException e){
+            throw e;
+        }
+    }
+
+    public static List<ActiveTicketDTO> getActiveTickets() throws NodeUnavailableException{
+        try{
+            return Ticket.getActiveTickets();
+        }catch (NodeUnavailableException e){
+            throw e;
+        }
+    }
+
+    public static Ticket getOneTicket(int ticketID) throws NodeUnavailableException, Exception {
+        try{
+            Ticket ticket = Ticket.getTicketFromID(ticketID);
+            return ticket;
+        } catch (NodeUnavailableException e){
+            throw e;
+        } catch (Exception e){
             throw e;
         }
     }

@@ -17,11 +17,13 @@
 
             // Se l'utente è loggato, mostra il link del profilo, altrimenti mostra il link di accesso
             if (isLoggedIn) {
-                document.getElementById("auctionLink").style.display = "block";
+                document.getElementById("ticketLink").style.display = "block";
                 document.getElementById("addLink").style.display = "block";
+                document.getElementById("profileLink").style.display = "block";
                 document.getElementById("loginLink").style.display = "none";
             } else {
-                document.getElementById("auctionLink").style.display = "none";
+                document.getElementById("ticketLink").style.display = "none";
+                document.getElementById("profileLink").style.display = "none";
                 document.getElementById("addLink").style.display = "none";
                 document.getElementById("loginLink").style.display = "block";
             }
@@ -41,13 +43,16 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a id="homeLink" class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a id="homeLink" class="nav-link active" aria-current="page" href="home.html">Home</a>
+                    </li>
+                    <li id="ticketLink" class="nav-item" style="display: none;">
+                        <a class="nav-link active" aria-current="page" href="tickets.html">Tickets</a>
+                    </li>
+                    <li id="profileLink" class="nav-item" style="display: none;">
+                        <a class="nav-link active" aria-current="page" href="profile.html">Profile</a>
                     </li>
                     <li class="nav-item" id="addLink">
                         <a id="addLink" class="nav-link active" aria-current="page" href="addticket.html">Add</a>
-                    </li>
-                    <li id="auctionLink" class="nav-item" style="display: none;">
-                        <a class="nav-link active" aria-current="page" href="#">Auction</a>
                     </li>
                     <li id="loginLink" class="nav-item" style="display: none;">
                         <a class="nav-link active" aria-current="page" href="login.html">Login</a>

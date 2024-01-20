@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.rqlite.NodeUnavailableException;
 
 import it.DSMT.myTicket.controller.AuctionController;
+import it.DSMT.myTicket.dto.ActiveAuctionListDTO;
 import it.DSMT.myTicket.dto.TicketDTO;
 import it.DSMT.myTicket.model.Auction;
 import it.DSMT.myTicket.model.Ticket;
@@ -61,8 +62,8 @@ public class AuctionView {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/auction/ticket/{id_auction}")
-    public ResponseEntity<Auction> getOneAuctionFromTicket(@PathVariable("id_auction") int idTicket){
+    @GetMapping("/auction/ticket/{id_ticket}")
+    public ResponseEntity<Auction> getOneAuctionFromTicket(@PathVariable("id_ticket") int idTicket){
         Auction response = new Auction();
         try{
             response = AuctionController.getAuction(idTicket, true);
@@ -75,5 +76,7 @@ public class AuctionView {
         }
         return ResponseEntity.ok(response);
     }
+
+
 
 }

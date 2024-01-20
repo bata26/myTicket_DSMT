@@ -41,11 +41,12 @@
             }
             return true;
         }
-        async function fetchActiveTickets() {
-            // fill the ticket list
-            const TICKET_ENDPOINT = "http://localhost:8080/ticket/active";
+
+        async function getTicketDetails() {
+            const ticketID = localStorage.getItem("ticketID");
+            const URL = "http://localhost:8080/ticket/" + ticketID;
             let res = {};
-            await axios.get(TICKET_ENDPOINT)
+            await axios.get(URL)
                 .then(response => {
                     console.log("Success:", response.data);
                     res = response.data;
@@ -56,45 +57,54 @@
                 });
             return res;
         }
+        function fillTicketDetails(data) {
+            document.getElementById("title").innerText = data.title;
+            document.getElementById("artist").innerText = data.artist;
+            document.getElementById("city").innerText = data.city;
+            document.getElementById("date").innerText = data.date;
+            document.getElementById("hour").innerText = data.hour;
+        }
 
-        function fillTicketsList(tickets) {
-            var homeMainCol = document.getElementById("home-main-col");
-
-            // Itera attraverso l'array e crea una card per ogni elemento
-            tickets["tickets"].forEach(function (ticket) {
-                // Crea un elemento di tipo div con la classe "card"
-                var cardElement = document.createElement("div");
-                cardElement.className = "card";
-                cardElement.style.marginTop = "15px";
-
-                // Costruisci il contenuto della card con i dati del ticket
-                cardElement.innerHTML = `
-                    <div class="card-header">
-                            <h5 class="card-title">${ticket.title}</h5>
-                    </div>
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-body-secondary"><b>${ticket.artist}</b></h6>
-                        <p class="card-text">${ticket.city} , ${ticket.date} at ${ticket.hour}</p>
-                        <button type="button" class="btn btn-outline-primary">Auction Details</button>
-                    </div>
-                    <br>
-                `;
-
-                // Aggiungi la card alla colonna "home-main-col"
-                homeMainCol.appendChild(cardElement);
-            });
+        async function checkIfAuctionExist() {
+            const ticketID = localStorage.getItem("ticketID");
+            const URL = "http://localhost:8080/auction/ticket/" + ticketID;
+            let res = {};
+            await axios.get(URL)
+                .then(response => {
+                    console.log("Success:", response.data);
+                    res = response.data;
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    document.getElementById("ticket-second-col").innerHTML = "<br><h2 style='color:red;'>No auction founded for this ticket</h2>";
+                });
+            return res;
         }
         async function setupPage() {
             if (!checkIfIsLogged()) {
                 alert("Login to view content");
             }
-            const responseData = await fetchActiveTickets();
-            fillTicketsList(responseData);
+            const data = await getTicketDetails();
+            fillTicketDetails(data);
+            const auction = await checkIfAuctionExist();
+            if (auction != {}) {
+                document.getElementById("ticket-second-col").innerHTML = `
+                        <br>
+                        <h2>Founded auction for this ticket</h2>
+                        <button class="btn btn-primary" style="width:100%;" onclick=redirectToAuctionDetail(${auction.id})>See Auction</button>
+                `
+            }
+        }
+
+        function redirectToAuctionDetail(auctionID) {
+            localStorage.setItem("auctionID", auctionID);
+            window.location.href = "auction-detail.html";
         }
     </script>
+
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="home.html">myTicket</a>
+            <a class="navbar-brand" href="#">myTicket</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -120,37 +130,43 @@
                 </ul>
             </div>
         </div>
-
     </nav>
-    <br>
-    <div class="container">
-        <form class="shadow-lg p-3 mb-5 bg-body-tertiary rounded" id="home-form">
-            <div class="row">
-                <div class="col">
-                    <label for="exampleInputEmail1" class="form-label">Title</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-9">
-                    <input type="text" class="form-control" id="home-search">
-                </div>
-                <div class="col-3">
-                    <button type="submit" class="btn btn-primary" style="width:100%;">Submit</button>
-                </div>
-            </div>
-        </form>
-    </div>
+
     <br>
     <div class="container" id="home-container">
         <div class="row">
             <div class="col-2">
             </div>
-            <div class="col-8" id="home-main-col">
+            <div class="col-8" id="ticket-main-col">
+                <div class="container mt-5">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title" id="title"></h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Artist: <span id="artist"></span></h6>
+                            <p class="card-text">City: <span id="city"></span></p>
+                            <p class="card-text">Date: <span id="date"></span></p>
+                            <p class="card-text">Hour: <span id="hour"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <div class="col-8" id="ticket-second-col">
             </div>
             <div class="col-2">
             </div>
         </div>
     </div>
+
+    
 </body>
+
 
 </html>

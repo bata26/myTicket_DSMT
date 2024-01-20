@@ -8,6 +8,8 @@ import com.google.gson.JsonElement;
 
 
 import it.DSMT.myTicket.controller.DbController;
+import it.DSMT.myTicket.dto.ActiveTicketDTO;
+
 import com.rqlite.NodeUnavailableException;
 import com.rqlite.dto.QueryResults;
 import com.rqlite.Rqlite;
@@ -100,14 +102,57 @@ public class Ticket {
                 .get(0).getAsJsonObject()
                 .getAsJsonArray("values");
         List<Ticket> tickets = new ArrayList<>();
+        if (values != null){
+            // Itera sugli elementi del JsonArray
+            for (JsonElement row : values) {
+                tickets.add(Ticket.parseQueryResult(row));
+            }
 
-        // Itera sugli elementi del JsonArray
-        for (JsonElement row : values) {
-            tickets.add(Ticket.parseQueryResult(row));
+            return tickets;
         }
+        return null;
+    }
 
-        return tickets;
+    public static List<ActiveTicketDTO> getActiveTickets() throws NodeUnavailableException {
+        QueryResults res = DbController.getInstance().getConnection().Query(
+                "select * from ticket inner join auction on auction.ticket_id = ticket.id where auction.winner_id = -1",
+                Rqlite.ReadConsistencyLevel.STRONG);
+        Gson gson = new Gson();
+        String json = gson.toJson(res);
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
+        List<ActiveTicketDTO> auctions = new ArrayList<>();
+
+        if (!jsonObject.has("error")) {
+            JsonArray values = jsonObject.getAsJsonArray("results")
+                    .get(0).getAsJsonObject()
+                    .getAsJsonArray("values");
+            for (JsonElement row : values) {
+                auctions.add(Ticket.parseQueryResultForActiveTicket(row));
+            }
+            System.out.println("ACTIVE : " + auctions);
+            return auctions;
+        }
+        return null;
+    }
+
+    private static ActiveTicketDTO parseQueryResultForActiveTicket(JsonElement element) {
+        System.out.println("elem : " + element);
+        // id | title| date | hour | city | owner_id | artist | id | final_bid |
+        // ticket_id | winner_id
+        int ticketID = element.getAsJsonArray().get(0).getAsInt();
+        String title = element.getAsJsonArray().get(1).getAsString();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String dateString = element.getAsJsonArray().get(2).getAsString().substring(0, 10);
+        LocalDate date = LocalDate.parse(dateString, formatter);
+
+        int hour = element.getAsJsonArray().get(3).getAsInt();
+        String city = element.getAsJsonArray().get(4).getAsString();
+        int ownerID = element.getAsJsonArray().get(5).getAsInt();
+        String artist = element.getAsJsonArray().get(6).getAsString();
+        int auctionID = element.getAsJsonArray().get(7).getAsInt();
+        return new ActiveTicketDTO(auctionID, ticketID, ownerID, title, date, hour, city, artist);
     }
 
     private static Ticket parseQueryResult(JsonElement element){
@@ -122,6 +167,9 @@ public class Ticket {
         int ownerID = element.getAsJsonArray().get(5).getAsInt();
         String artist = element.getAsJsonArray().get(6).getAsString();
         return new Ticket(ownerID, ticketTitle, date, hour, city, id, artist);
+    }
+    public int getID(){
+        return this.id;
     }
     public int getOwnerID(){
         return this.ownerID;
