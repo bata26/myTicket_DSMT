@@ -16,18 +16,19 @@ start(_StartType, _StartArgs) ->
             Port = Other
     end,  
     io:format("Cowboy started on port ~p~n", [Port]),
+    %{ok, _} = application:ensure_all_started(cowboy),
     % {_Status2, SInterval} = application:get_env(ws, stats_interval),
 
     Dispatch = cowboy_router:compile([
         {'_', [
             % {"/", cowboy_static, {priv_file, ws, "index.html"}},
             {"/auction", master_node_handler, []}
+            %{"/auctionpost", master_node_handler, []}
             % {"/[...]", cowboy_static, {priv_dir, ws, "", [{mimetypes, cow_mimetypes, all}]}}
         ]}
     ]),
-    {ok, _} = cowboy:start_clear(
-        http,
-        [{port, 8081}],
+    {ok, _} = cowboy:start_clear(http_listener,
+        [{port, Port}],
         #{env => #{dispatch => Dispatch}}
     ),
     io:format("Cowboy started on port ~p~n", [Port]),
