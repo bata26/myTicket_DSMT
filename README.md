@@ -175,3 +175,5 @@ About Erlang, each node will have a erlang process, called master node. The mast
 
 docker container:
 docker run  -p 4001:4001 -p 4002:4002 -v rqlite-dir:/rqlite/file rqlite/rqlite -node-id 1
+
+mvn install:install-file -Dfile=/usr/local/Cellar/erlang/26.0.2/lib/erlang/lib/jinterface-1.14/priv/OtpErlang.jar -DgroupId=com.ericsson -DartifactId=erlang-jinterface -Dversion=1.14 -Dpackaging=jar -DgeneratePom=true

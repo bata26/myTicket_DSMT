@@ -1,14 +1,14 @@
-{application, myTicketERL,
+{application, master_node,
  [{description, "An OTP application"},
   {vsn, "0.1.0"},
   {registered, []},
-  {mod, {myTicketERL_app, []}},
+  {mod, {master_node_app, []}},
   {applications,
    [kernel,
     stdlib,
     cowboy
    ]},
-  {env, []},
+  {env,[]},
   {modules, []},
 
   {licenses, ["Apache-2.0"]},

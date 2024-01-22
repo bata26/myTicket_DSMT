@@ -3,7 +3,7 @@
 %% @end
 %%%-------------------------------------------------------------------
 
--module(myTicketERL_app).
+-module(worker_node_app).
 
 -behaviour(application).
 
@@ -22,16 +22,16 @@ start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
         {'_', [
             % {"/", cowboy_static, {priv_file, ws, "index.html"}},
-            {"/websocket", myTicketERL_handler, [{stats_interval, list_to_integer(SInterval)}]}
+            {"/websocket", worker_node_handler, [{stats_interval, list_to_integer(SInterval)}]}
 %            {"/[...]", cowboy_static, {priv_dir, ws, "", [{mimetypes, cow_mimetypes, all}]}}
         ]}
     ]),
     {ok, _} = cowboy:start_clear(
         http,
-        [{port, 8080}],
+        [{port, 8081}],
         #{env => #{dispatch => Dispatch}}
     ),
-    myTicketERL_sup:start_link().
+    worker_node_sup:start_link().
 
 stop(_State) ->
     ok.

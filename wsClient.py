@@ -17,7 +17,7 @@ def on_open(ws):
 
 if __name__ == "__main__":
     # Indirizzo del server WebSocket
-    websocket_url = "ws://localhost:8080/websocket"
+    websocket_url = "ws://localhost:8081/websocket"
 
     # Inizializzazione e connessione al server WebSocket
     websocket.enableTrace(True)

@@ -3,7 +3,7 @@
 %% @end
 %%%-------------------------------------------------------------------
 
--module(myTicketERL_sup).
+-module(worker_node_sup).
 
 -behaviour(supervisor).
 

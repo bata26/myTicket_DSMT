@@ -1,4 +1,4 @@
--module(myTicketERL_handler).
+-module(worker_node_handler).
 -behaviour(cowboy_handler).
 
 -export([init/2]).
