@@ -15,7 +15,6 @@ start_worker_node() ->
     ok.
 
 start(_StartType, _StartArgs) ->
-    io:format("Hello from ~p~n", [self()]),
     io:format("WORKER node started on port 8082~n"),
     case os:getenv("PORT") of
         false ->

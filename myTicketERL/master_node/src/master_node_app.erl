@@ -7,18 +7,21 @@
 -behaviour(application).
 -export([start/2, stop/1]).
 
-
 start(_StartType, _StartArgs) ->
     case os:getenv("PORT") of
         false ->
             {_Status, Port} = application:get_env(ws, port);
         Other ->
             Port = Other
-    end,  
+    end,
+    {ok, Nodes} = application:get_env(ws, nodes),
+    io:format("Hello from ~p~n", [self()]),
     io:format("Cowboy started on port ~p~n", [Port]),
-    launch_worker(),
-    %{ok, _} = application:ensure_all_started(cowboy),
-    % {_Status2, SInterval} = application:get_env(ws, stats_interval),
+    io:format("[master_node_app] start => Nodes ~p~n", [Nodes]),
+	connect_nodes(Nodes),
+    % Start nodes
+	io:format("[master_node_app] start =>  start_nodes~n"),
+	start_nodes(Nodes),
 
     Dispatch = cowboy_router:compile([
         {'_', [
@@ -28,7 +31,8 @@ start(_StartType, _StartArgs) ->
             % {"/[...]", cowboy_static, {priv_dir, ws, "", [{mimetypes, cow_mimetypes, all}]}}
         ]}
     ]),
-    {ok, _} = cowboy:start_clear(http_listener,
+    {ok, _} = cowboy:start_clear(
+        http_listener,
         [{port, Port}],
         #{env => #{dispatch => Dispatch}}
     ),
@@ -38,8 +42,21 @@ start(_StartType, _StartArgs) ->
 stop(_State) ->
     ok.
 
-launch_worker() ->
-    %% Puoi chiamare questa funzione per avviare un nuovo worker node dinamicamente
-    worker_node_app:start_worker_node().
+%% Connect to remote nodes
+connect_nodes([]) ->
+	ok;
 
+connect_nodes([H | T]) when is_atom(H), is_list(T) ->
+	io:format("[master_node_app] connect_nodes => Connect node ~p~n", [H]),
+	true = net_kernel:connect_node(H),
+	connect_nodes(T).
 %% internal functions
+%% Start remote nodes
+start_nodes([]) ->
+	ok;
+
+start_nodes([Node | T]) ->
+	io:format("[master_node_app] start_nodes => ~p~n", [Node]),
+	Pid = spawn(Node, application, start, [chat_server]), % application:start(chat_server)
+    io:format("Hello from ~p~n", [Pid]),
+	start_nodes(T).
