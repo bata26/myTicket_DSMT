@@ -16,6 +16,7 @@ start(_StartType, _StartArgs) ->
             Port = Other
     end,  
     io:format("Cowboy started on port ~p~n", [Port]),
+    launch_worker(),
     %{ok, _} = application:ensure_all_started(cowboy),
     % {_Status2, SInterval} = application:get_env(ws, stats_interval),
 
@@ -36,5 +37,9 @@ start(_StartType, _StartArgs) ->
 
 stop(_State) ->
     ok.
+
+launch_worker() ->
+    %% Puoi chiamare questa funzione per avviare un nuovo worker node dinamicamente
+    worker_node_app:start_worker_node().
 
 %% internal functions

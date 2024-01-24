@@ -7,9 +7,15 @@
 
 -behaviour(application).
 
--export([start/2, stop/1]).
+-export([start/2, stop/1, start_worker_node/0]).
+
+start_worker_node() ->
+    %% Avvia il worker node
+    application:ensure_all_started(worker_node_app),
+    ok.
 
 start(_StartType, _StartArgs) ->
+    io:format("WORKER node started on port 8082~n"),
     case os:getenv("PORT") of
         false ->
             {_Status, Port} = application:get_env(ws, port);
