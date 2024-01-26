@@ -7,40 +7,15 @@
 
 -behaviour(application).
 
--export([start/2, stop/1, start_worker_node/0]).
-
-start_worker_node() ->
-    %% Avvia il worker node
-    application:ensure_all_started(worker_node_app),
-    ok.
+-export([start/2, stop/1]).
 
 start(_StartType, _StartArgs) ->
-    io:format("Hello from ~p~n", [self()]),
-    io:format("WORKER node started on port 8082~n"),
-    case os:getenv("PORT") of
-        false ->
-            {_Status, Port} = application:get_env(ws, port);
-        Other ->
-            Port = Other
-    end,        
-    {_Status2, SInterval} = application:get_env(ws, stats_interval),
-
-
-    Dispatch = cowboy_router:compile([
-        {'_', [
-            % {"/", cowboy_static, {priv_file, ws, "index.html"}},
-            {"/websocket", worker_node_handler, [{stats_interval, list_to_integer(SInterval)}]}
-%            {"/[...]", cowboy_static, {priv_dir, ws, "", [{mimetypes, cow_mimetypes, all}]}}
-        ]}
-    ]),
-    {ok, _} = cowboy:start_clear(
-        http,
-        [{port, 8081}],
-        #{env => #{dispatch => Dispatch}}
-    ),
+    mnesia:start(),
+    ok = mnesia:wait_for_tables([auction], 300000),
+    io:format("[chat_server_app] start => mnesia is ready~n"),
+    % Start supervisor
     worker_node_sup:start_link().
 
 stop(_State) ->
+    mnesia:stop(),
     ok.
-
-%% internal functions
