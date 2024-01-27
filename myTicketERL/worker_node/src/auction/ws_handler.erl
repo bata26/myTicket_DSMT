@@ -70,11 +70,12 @@ handle_bid(Map, _State) ->
     AuctionID = proplists:get_value(<<"auctionID">>, Map),
     BidAmount = proplists:get_value(<<"amount">>, Map),
     Username = proplists:get_value(<<"username">>, Map),
+    Timestamp = proplists:get_value(<<"ts">>, Map),
     io:format(
-        "[ws_handler] handle_login => userID: ~p , auctionID: ~p , amount: ~p ~n",
-        [UserID, AuctionID, BidAmount]
+        "[ws_handler] handle_login => userID: ~p , auctionID: ~p , amount: ~p ts: ~p ~n",
+        [UserID, AuctionID, BidAmount, Timestamp]
     ),
-    bid_server:add_bid(self(),UserID,AuctionID,BidAmount,Username),
+    bid_server:add_bid(self(),UserID,AuctionID,BidAmount,Username, Timestamp),
     {ok, {UserID, AuctionID, BidAmount}}.
 
 % Handle a new message sent in the chatroom

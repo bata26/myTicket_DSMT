@@ -96,7 +96,7 @@ stop_nodes([Node | T]) ->
 
 -record(online_students, {course_id, student_pid, student_name, hostname}).
 -record(auction, {auction_id, owner_id}).
--record(bid, {auction_id, user_id, username, amount}).
+-record(bid, {auction_id, user_id, username, amount, ts}).
 
 start_mnesia(Nodes) when is_list(Nodes) ->
     % Create mnesia schema if doesn't exists
