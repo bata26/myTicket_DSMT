@@ -94,9 +94,9 @@ stop_nodes([Node | T]) ->
 
 %%% MNESIA
 
--record(online_students, {course_id, student_pid, student_name, hostname}).
 -record(auction, {auction_id, owner_id}).
 -record(bid, {auction_id, user_id, username, amount, ts}).
+-record(users, {auction_id, user_pid, user_id}).
 
 start_mnesia(Nodes) when is_list(Nodes) ->
     % Create mnesia schema if doesn't exists
@@ -109,9 +109,9 @@ start_mnesia(Nodes) when is_list(Nodes) ->
 
     % Create table
     Result2 = mnesia:create_table(
-        online_students,
+        users,
         [
-            {attributes, record_info(fields, online_students)},
+            {attributes, record_info(fields, users)},
             {type, bag},
             {ram_copies, Nodes}
         ]
