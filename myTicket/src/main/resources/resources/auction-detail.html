@@ -42,7 +42,7 @@
             return true;
         }
 
-        async function getTicketDetails(){
+        async function getTicketDetails() {
             const ticketID = localStorage.getItem("ticketID");
             const URL = "http://localhost:8080/ticket/" + ticketID;
             let res = {};
@@ -57,18 +57,24 @@
                 });
             return res;
         }
-        function fillTicketDetails(data){
+        function fillTicketDetails(data) {
             document.getElementById("title").innerText = data.title;
             document.getElementById("artist").innerText = data.artist;
             document.getElementById("city").innerText = data.city;
             document.getElementById("date").innerText = data.date;
             document.getElementById("hour").innerText = data.hour;
+
+            localStorage.setItem("ownerID", data.ownerID);
+            localStorage.setItem("auctionID", data.ownerID);
         }
 
         async function setupPage() {
             if (!checkIfIsLogged()) {
                 alert("Login to view content");
             }
+
+            //var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+            //myModal.show();
             const data = await getTicketDetails();
             fillTicketDetails(data);
         }
@@ -122,7 +128,32 @@
                     </div>
                 </div>
             </div>
+            <div class="col-6 overflow-y-auto" style="grid-row:1/3; height:17rem">
+                <div class="container mt-5 ">
+                    <div class=" p-3 mb-5 bg-body-tertiary rounded" id="bid-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-6">
+                <form class="p-3 mb-5" id="add-form">
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="amount">
+                    </div>
+                    <button type="button" class="btn btn-primary" style="width: 100%;" onclick="bid()"
+                        data-bs-dismiss="modal">Bid</button>
+                </form>
+            </div>
+            <div class="col-3">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+            </div>
+            <div class="col-3">
+
             </div>
         </div>
     </div>
@@ -141,7 +172,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="joinAuction()" data-bs-dismiss="modal">Join Auction</button>
+                <button type="button" class="btn btn-primary" onclick="joinAuction()" data-bs-dismiss="modal">Join
+                    Auction</button>
             </div>
         </div>
     </div>
@@ -153,8 +185,125 @@
         myModal.show();
     });
 
-    function joinAuction(){
-        console.log("STO PER JOINARE AUCTION");
+    function bid() {
+        const amount = document.getElementById("amount").value;
+        const URL = "ws://192.168.105.128:8081/ws";
+        let socket = new WebSocket(URL);
+        let body = {}
+
+        socket.addEventListener('open', function (event) {
+            console.log('Connessione aperta');
+            let currentDate = new Date();
+            var year = currentDate.getFullYear();
+            var month = (currentDate.getMonth() + 1).toString().padStart(2, '0');  // Aggiungi uno per ottenere il mese corretto
+            var day = currentDate.getDate().toString().padStart(2, '0');
+
+            // Ottieni informazioni sull'orario
+            var hours = currentDate.getHours().toString().padStart(2, '0');
+            var minutes = currentDate.getMinutes().toString().padStart(2, '0');
+            var seconds = currentDate.getSeconds().toString().padStart(2, '0');
+
+            // Formatta la data nel tuo formato desiderato
+            var formattedDate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
+            console.log("formattedDate : ", formattedDate);
+            // Invia dati al server dopo l'apertura della connessione
+            body = {
+                "opcode": "BID",
+                "auctionID": localStorage.getItem("auctionID"),
+                "userID": localStorage.getItem("userID"),
+                "username": "bata",
+                "amount": amount,
+                "ts": formattedDate,
+            }
+            socket.send(JSON.stringify(body));
+        });
+
+        socket.addEventListener('message', function (event) {
+            var data = event.data;
+            console.log('Dati ricevuti:', data);
+            if (data == "OK") {
+                console.log(body);
+                var bidListElement = document.getElementById("bid-list");
+                var nuovoDiv = document.createElement("div");
+                let convertedTS = new Date(body.ts);
+                nuovoDiv.innerHTML = convertedTS.getHours() + ":" + convertedTS.getMinutes() + ":" + convertedTS.getSeconds() + "<br>";
+                nuovoDiv.innerHTML += "<b>" + body.username + "</b><br>";
+                nuovoDiv.innerHTML += "<b>" + body.amount + "</b><br>";
+                nuovoDiv.innerHTML += "<hr>";
+                bidListElement.appendChild(nuovoDiv);
+            }
+        });
+        socket.addEventListener('error', function (event) {
+            console.error('Errore:', event);
+        });
+
+        socket.addEventListener('close', function (event) {
+            console.log('Connessione chiusa');
+        });
+
+    }
+
+    function addBid(receivedBID) {
+        let bidListElement = document.getElementById("bid-list");
+        var nuovoDiv = document.createElement("div");
+        let convertedTS = new Date(receivedBID.ts);
+        nuovoDiv.innerHTML = convertedTS.getHours() + ":" + convertedTS.getMinutes() + ":" + convertedTS.getSeconds() + "<br>";
+        nuovoDiv.innerHTML += "<b>" + receivedBID.username + "</b><br>";
+        nuovoDiv.innerHTML += "<b>" + receivedBID.amount + "</b><br>";
+        nuovoDiv.innerHTML += "<hr>";
+
+        bidListElement.appendChild(nuovoDiv);
+    }
+
+    function joinAuction() {
+        const URL = "ws://192.168.105.128:8081/ws";
+        let socket = new WebSocket(URL);
+
+        socket.addEventListener('open', function (event) {
+            console.log('Connessione aperta');
+
+            // Invia dati al server dopo l'apertura della connessione
+            let body = {
+                "opcode": "JOIN",
+                "auctionID": localStorage.getItem("auctionID"),
+                "userID": localStorage.getItem("userID"),
+                "username": "bata"
+            }
+            socket.send(JSON.stringify(body));
+        });
+
+        socket.addEventListener('message', function (event) {
+            var data = event.data;
+            if (data == "[]") return;
+            if (JSON.parse(data)["opcode"] == "RECV BID") {
+                console.log("receivedBID: ", data);
+                addBid(JSON.parse(data));
+            } else {
+                let cleanedData = data.replace("{", "");
+                cleanedData = cleanedData.replace("}", "");
+                console.log("CLEANED ", cleanedData);
+                let valueList = cleanedData.split(",");
+
+                let res = [];
+                for (let i = 0; i < valueList.length; i += 5) {
+                    let obj = JSON.parse("{" + valueList[i] + "," + valueList[i + 1] + "," + valueList[i + 2] + "," + valueList[i + 3] + "," + valueList[i + 4] + "}");
+                    res.push(obj);
+                }
+                
+                res.forEach((item) => {addBid(item)});
+                console.log("RES : ", res);
+            }
+
+        });
+
+        socket.addEventListener('error', function (event) {
+            console.error('Errore:', event);
+        });
+
+        socket.addEventListener('close', function (event) {
+            console.log('Connessione chiusa');
+        });
+
     }
 </script>
 

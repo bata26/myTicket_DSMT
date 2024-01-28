@@ -56,4 +56,12 @@ public class TicketController {
             throw e;
         }
     }
+
+    public static List<Ticket> getOwnedTicket(int ownerID) throws NodeUnavailableException {
+        try{
+            return Ticket.getTicketFromOwner(ownerID);
+        } catch (NodeUnavailableException e){
+            throw e;
+        }
+    } 
 }

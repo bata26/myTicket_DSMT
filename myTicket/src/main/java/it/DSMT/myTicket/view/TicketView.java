@@ -14,6 +14,7 @@ import it.DSMT.myTicket.controller.TicketController;
 import it.DSMT.myTicket.model.Ticket;
 import it.DSMT.myTicket.dto.ActiveAuctionListDTO;
 import it.DSMT.myTicket.dto.TicketDTO;
+import it.DSMT.myTicket.dto.UserIDDTO;
 
 @Controller
 public class TicketView {
@@ -92,5 +93,17 @@ public class TicketView {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(ticket);
+    }
+
+    @GetMapping("/ticket/user/{user_id}")
+    public ResponseEntity<TicketDTO> getOwnTicket(@PathVariable("user_id") int userID){
+        TicketDTO response = new TicketDTO();
+        try{
+            response.setTickets(TicketController.getOwnedTicket(userID));
+        } catch (NodeUnavailableException e){
+            System.out.println("[TICKET VIEW] Impossible to remove ticket");
+            return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok(response);
     }
 }

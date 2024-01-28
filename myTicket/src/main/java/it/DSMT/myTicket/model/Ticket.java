@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 
 import it.DSMT.myTicket.controller.DbController;
 import it.DSMT.myTicket.dto.ActiveTicketDTO;
+import it.DSMT.myTicket.dto.TicketDTO;
 
 import com.rqlite.NodeUnavailableException;
 import com.rqlite.dto.QueryResults;
@@ -132,6 +133,29 @@ public class Ticket {
             }
             System.out.println("ACTIVE : " + auctions);
             return auctions;
+        }
+        return null;
+    }
+
+    public static List<Ticket> getTicketFromOwner(int ownerID) throws NodeUnavailableException {
+        QueryResults res = DbController.getInstance().getConnection().Query(
+                "select * from ticket where owner_id = " + ownerID,
+                Rqlite.ReadConsistencyLevel.STRONG);
+        Gson gson = new Gson();
+        String json = gson.toJson(res);
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+
+        List<Ticket> tickets = new ArrayList<>();
+
+        if (!jsonObject.has("error")) {
+            JsonArray values = jsonObject.getAsJsonArray("results")
+                    .get(0).getAsJsonObject()
+                    .getAsJsonArray("values");
+            for (JsonElement row : values) {
+                tickets.add(Ticket.parseQueryResult(row));
+            }
+            System.out.println("OWNED : " + tickets);
+            return tickets;
         }
         return null;
     }
