@@ -1,18 +1,24 @@
 -module(ws_handler).
 
 -export([init/2, websocket_handle/2, websocket_info/2, terminate/2]).
-
 % Cowboy will call init/2 whenever a request is received,
 % in order to establish a websocket connection.
+-record(state, {
+    % Un dizionario per mantenere i riferimenti ai timer per ciascuna asta
+    auction_timers = #{}
+}).
+
 init(Req, _State) ->
     % Switch to cowboy_websocket module
-    {cowboy_websocket, Req, none}.
+    State = #state{auction_timers = #{}},
+    {cowboy_websocket, Req, State}.
 
 % Cowboy will call websocket_handle/2 whenever a text, binary, ping or pong frame arrives from the client.
 websocket_handle({text, Message}, State) ->
     % io:format("[chatroom_websocket] websocket_handle => Frame: ~p, State: ~p~n", [Frame, State]),
     % io:format("[chatroom_websocket] websocket_handle => Received ~p~n", [Frame]),
     io:format("[chatroom_websocket] websocket_handle => Received ~p~n", [Message]),
+    io:format("[chatroom_websocket] websocket_handle => Received STATE~p~n", [State]),
 
     try
         {DecodedMessage} = jiffy:decode(Message),
@@ -42,7 +48,7 @@ handle_websocket_frame(Map, State) ->
     end.
 
 % Handle a login request
-handle_join(Map, _State) ->
+handle_join(Map, State) ->
     UserID = proplists:get_value(<<"userID">>, Map),
     Username = proplists:get_value(<<"username">>, Map),
     AuctionID = proplists:get_value(<<"auctionID">>, Map),
@@ -52,10 +58,10 @@ handle_join(Map, _State) ->
     ),
     bid_server:join_auction(self(), AuctionID, UserID),
     bid_server:get_all_bids(self(), AuctionID),
-    {ok, {UserID, Username, AuctionID}}.
+    {ok, State}.
 
 % Handle a request for updating online users
-handle_bid(Map, _State) ->
+handle_bid(Map, State) ->
     UserID = proplists:get_value(<<"userID">>, Map),
     AuctionID = proplists:get_value(<<"auctionID">>, Map),
     BidAmount = proplists:get_value(<<"amount">>, Map),
@@ -66,26 +72,13 @@ handle_bid(Map, _State) ->
         [UserID, AuctionID, BidAmount, Timestamp]
     ),
     bid_server:add_bid(self(), UserID, AuctionID, BidAmount, Username, Timestamp),
-    {ok, {UserID, AuctionID, BidAmount}}.
-
-% Handle a new message sent in the chatroom
-handle_chat_message(Map, State = {Course, Username}) ->
-    io:format(
-        "[ws_handler] handle_chat_message => message received from Pid: ~p in the course: ~p ~n", [
-            self(), Course
-        ]
-    ),
-    {ok, Text} = maps:find(<<"text">>, Map),
-    chatroom_server:send_message(
-        self(),
-        binary_to_list(Username),
-        Course,
-        binary_to_list(Text)
-    ),
     {ok, State}.
 
 % Cowboy will call websocket_info/2 whenever an Erlang message arrives
 % (=> from another Erlang process).
+websocket_info({bid_timeout, Msg}, State) ->
+    io:format("ENDED BID ~n"),
+    {[{text, Msg}], State};
 websocket_info({bids, []}, _State) ->
     io:format("[ws_handler] websocket_handle => Empty bids list~n"),
     {ok, _State};

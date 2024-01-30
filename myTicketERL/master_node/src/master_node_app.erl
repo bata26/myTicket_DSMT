@@ -94,7 +94,7 @@ stop_nodes([Node | T]) ->
 
 %%% MNESIA
 
--record(auction, {auction_id, owner_id}).
+-record(auction, {auction_id, owner_id, timer}).
 -record(bid, {auction_id, user_id, username, amount, ts}).
 -record(users, {auction_id, user_pid, user_id}).
 

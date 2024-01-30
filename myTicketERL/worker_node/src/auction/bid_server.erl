@@ -2,7 +2,7 @@
 
 -export([join_auction/3, add_bid/6]).
 
--record(auction, {auction_id, owner_id}).
+-record(auction, {auction_id, owner_id, timer}).
 -record(users, {auction_id, user_pid, user_id}).
 -record(bid, {auction_id, user_id, username, amount, ts}).
 
@@ -53,8 +53,8 @@ join_auction(Pid, AuctionID, UserID) ->
 send_message_to_users(Message, UsersList, SenderID) ->
     lists:foreach(
         fun(#users{user_pid = Pid, user_id = UserID} = User) ->
-            io:format("SENDER : ~p~n" , [SenderID]),
-            io:format("USER : ~p~n" , [UserID]),
+            io:format("SENDER : ~p~n", [SenderID]),
+            io:format("USER : ~p~n", [UserID]),
             case UserID == SenderID of
                 false ->
                     Pid ! {result, Message};
@@ -65,12 +65,34 @@ send_message_to_users(Message, UsersList, SenderID) ->
         UsersList
     ).
 
+
+update_timer(AuctionID,Pid) -> 
+    StringAuctionID = binary_to_list(AuctionID),
+    ConvertedAuctionID = list_to_integer(StringAuctionID),
+    Res = mnesia_manager:get_timer_from_auction_id(ConvertedAuctionID),
+    Auction = hd(Res),
+    io:format("Single auction : ~p~n" , [Auction]),
+    ActualTimerRef = Auction#auction.timer,
+    io:format("Actual Timer Ref : ~p~n" , [ActualTimerRef]),
+    
+    case ActualTimerRef of
+        -1 ->
+            io:format("CREO IL NUOVO TIMER DA 0~n"),
+            TimerRef = erlang:send_after(25000, Pid, {bid_timeout, "END"}),
+            io:format("CREATO~n");
+        _ ->
+            io:format("CANCELLO IL VECCHIO TIMER E NE CREO UNO NUOVO~n"),
+            erlang:cancel(ActualTimerRef),
+            TimerRef = erlang:send_after(25000, Pid, {bid_timeout, "END"})
+    end,
+    io:format("AGGIORNO MNESIA~n"),
+    mnesia_manager:update_timer_from_auction_id(ConvertedAuctionID, TimerRef, ActualTimerRef),
+    io:format("RES : ~p~n" , [Res]).
+
 add_bid(Pid, UserID, AuctionID, BidAmount, Username, Timestamp) ->
     mnesia_manager:insert_bid(UserID, AuctionID, BidAmount, Username, Timestamp),
     Pid ! {result, "OK"},
-    io:format("Update All other users~n"),
     Users = mnesia_manager:get_users_from_auction_id(AuctionID),
-    io:format("Users : ~p~n", [Users]),
     Msg = jiffy:encode(
         #{
             <<"opcode">> => <<"RECV BID">>,
@@ -79,6 +101,5 @@ add_bid(Pid, UserID, AuctionID, BidAmount, Username, Timestamp) ->
             <<"amount">> => BidAmount
         }
     ),
-    io:format("msg : ~p~n", [Msg]),
     send_message_to_users(Msg, Users, UserID),
-    io:format("ONLINE USERS : ~p~n", [Users]).
+    update_timer(AuctionID, Pid).
