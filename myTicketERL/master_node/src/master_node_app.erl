@@ -45,7 +45,8 @@ start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
         {'_', [
             % {"/", cowboy_static, {priv_file, ws, "index.html"}},
-            {"/auction", master_node_handler, []}
+            {"/auction", master_node_handler, []},
+            {"/auction/history" , history_handler , []}
             %{"/auctionpost", master_node_handler, []}
             % {"/[...]", cowboy_static, {priv_dir, ws, "", [{mimetypes, cow_mimetypes, all}]}}
         ]}
