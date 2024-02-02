@@ -48,6 +48,21 @@
                 });
             return res;
         }
+        async function fetchWinnedTickets() {
+            // fill the ticket list
+            const TICKET_ENDPOINT = "http://localhost:8080/ticket/winner/" + localStorage.getItem("userID");
+            let res = {};
+            await axios.get(TICKET_ENDPOINT)
+                .then(response => {
+                    console.log("Success:", response.data);
+                    res = response.data;
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Impossble to fetch tickets");
+                });
+            return res;
+        }
         function checkIfIsLogged() {
             let isLogged = localStorage.getItem("loggedIn");
             if (!isLogged) {
@@ -83,21 +98,53 @@
                 homeMainCol.appendChild(cardElement);
             });
         }
+        function fillWinnedTicketsList(tickets) {
+            var homeMainCol = document.getElementById("profile-winned-main-col");
+
+            // Itera attraverso l'array e crea una card per ogni elemento
+            tickets["tickets"].forEach(function (ticket) {
+                // Crea un elemento di tipo div con la classe "card"
+                var cardElement = document.createElement("div");
+                cardElement.className = "card";
+                cardElement.style.marginTop = "15px";
+
+                // Costruisci il contenuto della card con i dati del ticket
+                cardElement.innerHTML = `
+                    <div class="card-header">
+                            <h5 class="card-title">${ticket.title}</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-body-secondary"><b>${ticket.artist}</b></h6>
+                        <p class="card-text">${ticket.city} , ${ticket.date} at ${ticket.hour}</p>
+                    </div>
+                    <br>
+                `;
+
+                // Aggiungi la card alla colonna "home-main-col"
+                homeMainCol.appendChild(cardElement);
+            });
+        }
         async function createAuction(ticketID) {
             // localhost:8080/auction/ticket/1000
             const ENDPOINT = "http://localhost:8080/auction/ticket/" + ticketID;
             const CREATE_AUCTION_ENDPOINT = "http://localhost:8080/auction";
+            console.log("INVIO LA RICHIESTA A : " , ENDPOINT)
             await axios.get(ENDPOINT)
                 .then(response => {
                     alert("Auction Already exists for this ticket");
                     res = response.data;
                 })
                 .catch(async error => {
-                    let body = {"ticket_id": ticketID};
+                    const body = {"ticketID": ticketID, "userID": localStorage.getItem("userID")};
+                    console.log("BODY:", body);
+                    console.log("INVIO LA RICHIESTA A : " , CREATE_AUCTION_ENDPOINT);
+                    console.log("BODY : " , body);
                     localStorage.setItem("ticketID", ticketID);
                     await axios.post(CREATE_AUCTION_ENDPOINT, body)
                         .then(response => {
                             alert("Auction created!");
+                            console.log("Success:", response.data.auctionID);
+                            localStorage.setItem("auctionID", response.data.auctionID);
                             window.location.href = "auction-detail.html";
                         })
                         .catch(error => {
@@ -115,6 +162,8 @@
             }
             const responseData = await fetchTickets();
             fillTicketsList(responseData);
+            const winnedTickets = await fetchWinnedTickets();
+            fillWinnedTicketsList(winnedTickets);
         }
     </script>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -147,14 +196,13 @@
         </div>
     </nav>
     <div class="container">
-        <h1 class="text-center">Ticket Owned</h1>
         <div class="container" id="home-container">
             <div class="row">
-                <div class="col-2">
+                <div class="col-6" id="profile-main-col">
+                    <h1 class="text-center">Ticket Owned</h1>
                 </div>
-                <div class="col-8" id="profile-main-col">
-                </div>
-                <div class="col-2">
+                <div class="col-6" id="profile-winned-main-col">
+                    <h1 class="text-center">Ticket Winned</h1>
                 </div>
             </div>
         </div>

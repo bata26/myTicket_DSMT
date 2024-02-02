@@ -106,4 +106,16 @@ public class TicketView {
         }
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/ticket/winner/{user_id}")
+    public ResponseEntity<TicketDTO> getWinnedTicket(@PathVariable("user_id") int userID){
+        TicketDTO response = new TicketDTO();
+        try{
+            response.setTickets(TicketController.getWinnedTicket(userID));
+        } catch (NodeUnavailableException e){
+            System.out.println("[TICKET VIEW] Impossible to remove ticket");
+            return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok(response);
+    }
 }

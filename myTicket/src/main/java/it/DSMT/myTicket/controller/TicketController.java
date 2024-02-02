@@ -64,4 +64,12 @@ public class TicketController {
             throw e;
         }
     } 
+
+    public static List<Ticket> getWinnedTicket(int userID) throws NodeUnavailableException {
+        try{
+            return Ticket.getWinnedTicket(userID);
+        } catch (NodeUnavailableException e){
+            throw e;
+        }
+    } 
 }

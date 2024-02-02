@@ -8,29 +8,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.rqlite.NodeUnavailableException;
 
 import it.DSMT.myTicket.controller.AuctionController;
-import it.DSMT.myTicket.dto.ActiveAuctionListDTO;
-import it.DSMT.myTicket.dto.TicketDTO;
+import it.DSMT.myTicket.dto.CloseAuctionDTO;
+import it.DSMT.myTicket.dto.CreateAuctionDTO;
+import it.DSMT.myTicket.dto.CreatedAuctionDTO;
 import it.DSMT.myTicket.model.Auction;
-import it.DSMT.myTicket.model.Ticket;
 
 @Controller
-public class AuctionView {
+public class AuctionView {  
 
     @PostMapping("/auction")
-    public ResponseEntity<String> createAuction(@RequestBody Auction auction){
+    public ResponseEntity<CreatedAuctionDTO> createAuction(@RequestBody CreateAuctionDTO auction){
+        CreatedAuctionDTO response = new CreatedAuctionDTO();
         try{
-            AuctionController.createAuction(auction.getTicketID());
+            System.out.println("TicketID: " + auction.getTicketID());
+            response.setAuctionID(AuctionController.createAuction(auction.getTicketID(), auction.getUserID()));
         } catch (NodeUnavailableException e){
             System.out.println("[AUCTION VIEW] Impossible to create auction");
-            return new ResponseEntity<>("ERROR" , HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("Auction created!", HttpStatus.OK);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/auction/{id_auction}")
@@ -78,5 +78,18 @@ public class AuctionView {
     }
 
 
+    @PostMapping("/close/auction")
+    public ResponseEntity<String> closeAuction(@RequestBody CloseAuctionDTO auction){
+        try{
+            AuctionController.closeAuction(auction.getAuctionID(),auction.getWinnerID(),auction.getLastBid());
+        } catch (NodeUnavailableException e){
+            System.out.println("[AUCTION VIEW] Impossible to close auction");
+            return new ResponseEntity<>("INTERNAL_SERVER_ERROR" , HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e){
+        System.out.println("[AUCTION VIEW] Impossible to close auction");
+            return new ResponseEntity<>("NOT_FOUNT" , HttpStatus.NOT_FOUND);
 
+        }
+        return new ResponseEntity<>("Auction closed!", HttpStatus.OK);
+    }
 }

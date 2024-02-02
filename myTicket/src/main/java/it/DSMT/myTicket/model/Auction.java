@@ -11,7 +11,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.rqlite.NodeUnavailableException;
 import com.rqlite.Rqlite;
+import com.rqlite.dto.ExecuteResults;
 import com.rqlite.dto.QueryResults;
+import java.lang.reflect.Field;
 
 import it.DSMT.myTicket.controller.DbController;
 import it.DSMT.myTicket.dto.ActiveAuctionDTO;
@@ -38,10 +40,27 @@ public class Auction {
         this.winner_id = winner_id;
     }
 
-    public void addAuction() throws NodeUnavailableException {
+    public int addAuction() throws NodeUnavailableException {
         String query = "INSERT INTO auction(ticket_id, final_bid, winner_id) values( " + this.ticket_id + ","
                 + this.final_bid + "," + this.winner_id + ")";
-        DbController.getInstance().getConnection().Execute(query);
+        ExecuteResults res = DbController.getInstance().getConnection().Execute(query);
+        try {
+
+            if (res.results != null && res.results.length > 0) {
+                ExecuteResults.Result result = res.results[0];
+                Field[] fields = result.getClass().getDeclaredFields();
+    
+                for (Field field : fields) {
+                    field.setAccessible(true);
+                    if ("lastInsertId".equals(field.getName())) {
+                        return (int) field.get(result);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public void removeAuction() throws NodeUnavailableException {
@@ -106,6 +125,12 @@ public class Auction {
         return null;
     }
 
+    public void closeAuction(int winnerID, float lastBid) throws NodeUnavailableException {
+        String query = "UPDATE auction SET winner_id = " + winnerID + ", final_bid = " + lastBid + " WHERE id = "
+                + this.id;
+        DbController.getInstance().getConnection().Execute(query);
+    }
+
     private static ActiveAuctionDTO parseQueryResultForActiveAuction(JsonElement element) {
         System.out.println("elem : " + element);
         // id | title| date | hour | city | owner_id | artist | id | final_bid |
@@ -125,7 +150,8 @@ public class Auction {
         float finalBid = element.getAsJsonArray().get(8).getAsFloat();
         int winnerID = element.getAsJsonArray().get(10).getAsInt();
 
-        ActiveAuctionDTO auction = new ActiveAuctionDTO(auctionID, ticketID, ownerID, title, date, hour, city, artist, finalBid, winnerID);
+        ActiveAuctionDTO auction = new ActiveAuctionDTO(auctionID, ticketID, ownerID, title, date, hour, city, artist,
+                finalBid, winnerID);
         System.out.println("AUCTION ACTIVE : " + auction.toString());
         return new ActiveAuctionDTO(auctionID, ticketID, ownerID, title, date, hour, city, artist, finalBid, winnerID);
     }

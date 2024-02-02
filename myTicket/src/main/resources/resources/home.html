@@ -75,7 +75,7 @@
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-body-secondary"><b>${ticket.artist}</b></h6>
                         <p class="card-text">${ticket.city} , ${ticket.date} at ${ticket.hour}</p>
-                        <button type="button" class="btn btn-outline-primary">Auction Details</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="navigateToAuctionDetail(${ticket.auctionID})"">Auction Details</button>
                     </div>
                     <br>
                 `;
@@ -83,6 +83,10 @@
                 // Aggiungi la card alla colonna "home-main-col"
                 homeMainCol.appendChild(cardElement);
             });
+        }
+        function navigateToAuctionDetail(auctionID) {
+            localStorage.setItem("auctionID", auctionID);
+            window.location.href = "auction-detail.html";
         }
         async function setupPage() {
             if (!checkIfIsLogged()) {

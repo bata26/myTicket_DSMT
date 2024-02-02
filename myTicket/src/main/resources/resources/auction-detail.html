@@ -65,7 +65,7 @@
             document.getElementById("hour").innerText = data.hour;
 
             localStorage.setItem("ownerID", data.ownerID);
-            localStorage.setItem("auctionID", data.ownerID);
+            //localStorage.setItem("auctionID", data.ownerID);
         }
 
         async function setupPage() {
@@ -220,8 +220,8 @@
 
         socket.addEventListener('message', function (event) {
             var data = event.data;
-            console.log(new Date() , 'Dati ricevuti:', data);
-            
+            console.log(new Date(), 'Dati ricevuti:', data);
+
             if (data == "OK") {
                 console.log(body);
                 var bidListElement = document.getElementById("bid-list");
@@ -279,8 +279,15 @@
             if (JSON.parse(data)["opcode"] == "RECV BID") {
                 console.log("receivedBID: ", data);
                 addBid(JSON.parse(data));
-            }else if(JSON.parse(data)["opcode"] == "END BID"){
-                alert("AUCTION ENDED");
+            } else if (JSON.parse(data)["opcode"] == "END BID") {
+                let parsedRes = JSON.parse(data);
+                if (parsedRes["winnerID"] == localStorage.getItem("userID") ){
+                    alert("YOU WON");
+                    window.location.href = "profile.html";
+                } else {
+                    alert("AUCTION ENDED, YOU LOSE");
+                    window.location.href = "home.html";
+                }
             } else {
                 let cleanedData = data.replace("{", "");
                 cleanedData = cleanedData.replace("}", "");
@@ -292,8 +299,8 @@
                     let obj = JSON.parse("{" + valueList[i] + "," + valueList[i + 1] + "," + valueList[i + 2] + "," + valueList[i + 3] + "," + valueList[i + 4] + "}");
                     res.push(obj);
                 }
-                
-                res.forEach((item) => {addBid(item)});
+
+                res.forEach((item) => { addBid(item) });
                 console.log("RES : ", res);
             }
 
@@ -305,6 +312,10 @@
 
         socket.addEventListener('close', function (event) {
             console.log('Connessione chiusa');
+            setTimeout(() => {
+                document.getElementById("bid-list").innerHTML = "";
+                joinAuction();
+            }, 1000);
         });
 
     }

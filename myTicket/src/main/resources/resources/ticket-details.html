@@ -77,6 +77,7 @@
                 .catch(error => {
                     console.error("Error:", error);
                     document.getElementById("ticket-second-col").innerHTML = "<br><h2 style='color:red;'>No auction founded for this ticket</h2>";
+                    res = null;
                 });
             return res;
         }
@@ -87,7 +88,7 @@
             const data = await getTicketDetails();
             fillTicketDetails(data);
             const auction = await checkIfAuctionExist();
-            if (auction != {}) {
+            if (auction != null) {
                 document.getElementById("ticket-second-col").innerHTML = `
                         <br>
                         <h2>Founded auction for this ticket</h2>
