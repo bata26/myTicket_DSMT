@@ -76,9 +76,10 @@ handle_bid(Map, State) ->
 
 % Cowboy will call websocket_info/2 whenever an Erlang message arrives
 % (=> from another Erlang process).
-websocket_info({bid_timeout, Msg}, State) ->
+websocket_info({bid_timeout, {AuctionID, UserID, BidAmount}}, State) ->
     io:format("ENDED BID ~n"),
-    {[{text, Msg}], State};
+    make_http_request(AuctionID, UserID, BidAmount),
+    bid_server:end_auction(AuctionID, UserID, BidAmount);
 websocket_info({bids, []}, _State) ->
     io:format("[ws_handler] websocket_handle => Empty bids list~n"),
     {ok, _State};
@@ -103,3 +104,19 @@ terminate(Reason, State) ->
         Reason, State
     ]),
     {stop, Reason, State}.
+
+make_http_request(AuctionID, WinnerID, LastBid) ->
+    % Sostituisci con l'URL del tuo server Java
+    URL = "http://192.168.10.20:8080/close/auction",
+    Method = post,
+    % Sostituisci con gli header necessari
+    Headers = [{"Content-Type", "application/json"}],
+    % Sostituisci con il corpo della tua richiesta
+    Body = #{<<"auctionID">> => AuctionID, <<"winnerID">> => WinnerID, <<"lastBid">> => LastBid},
+    EncodedBody = jiffy:encode(Body),
+    case httpc:request(Method, {URL, Headers, "application/json", EncodedBody}, [], []) of
+        {ok, {{_, StatusCode, _}, _Headers, _ResponseBody}} ->
+            io:format("HTTP Response Code: ~p~n", [StatusCode]);
+        {error, Reason} ->
+            io:format("Errore nella richiesta HTTP: ~p~n", [Reason])
+    end.

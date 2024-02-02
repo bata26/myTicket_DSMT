@@ -23,26 +23,23 @@ get_bids_from_auction_id(AuctionID) ->
 
 join_auction(Pid, AuctionID, UserID) ->
     Fun = fun() ->
-        %io:format("[mnesia_manager] join_course => Check if the pid of the student: ~p is already in a chatroom ~n", [StudentPid]),
-        %NewStudent = #online_students{course_id='$1', student_pid = '$2', student_name = '$3', hostname = 'S4'},
-        %Guard = {'==', '$2', StudentPid},
-        %NewStudentCheck = mnesia:select(online_students, [{NewStudent, [Guard], ['$2']}]),
-        io:format(
-            "[mnesia_manager] insert_bid => Add USER Pis: ~p, AuctionID: ~p, UserID : ~p~n",
-            [Pid, AuctionID, UserID]
-        ),
-        %io:format("[mnesia_manager] join_auction => Check result: ~p~n", [AuctionID]),
-        %io:format("[mnesia_manager] join_auction => Student not in any chatroom, student can be join this chat ~n"),
-        mnesia:write(
-            #users{
-                auction_id = AuctionID,
-                user_pid = Pid,
-                user_id = UserID
-            }
-        )
+        io:format("PRE READ~n"),
+        % Tenta di leggere il record esistente dal database
+        ExistingRecord = mnesia:match_object({users, AuctionID, '_', UserID}),
+        io:format("EXISTING RECORD : ~p~n" , [ExistingRecord]),
+        case ExistingRecord of
+            % Se il record esiste, aggiorna il campo user_pid
+            [#users{user_id = UserID} = OldRecord] ->
+                UpdatedRecord = OldRecord#users{user_pid = Pid},
+                mnesia:write(UpdatedRecord);
+            % Se il record non esiste, crea un nuovo record
+            [] ->
+                NewRecord = #users{auction_id = AuctionID, user_pid = Pid, user_id = UserID},
+                mnesia:write(NewRecord)
+        end
     end,
     {atomic, Result} = mnesia:transaction(Fun),
-    io:format("[mnesia_manager] join_course => Chatroom join request returned response: ~p~n", [
+    io:format("[mnesia_manager] join_auction => Chatroom join request returned response: ~p~n", [
         Result
     ]),
     mnesia:transaction(fun() ->
@@ -50,6 +47,7 @@ join_auction(Pid, AuctionID, UserID) ->
         Users = mnesia:select(users, [{'_', [], ['$_']}]),
         io:format("[mnesia_manager] join_auction => All users after insertion: ~p~n", [Users])
     end).
+
 insert_bid(UserID, AuctionID, BidAmount, Username, Timestamp) ->
     Fun = fun() ->
         %io:format("[mnesia_manager] join_course => Check if the pid of the student: ~p is already in a chatroom ~n", [StudentPid]),
@@ -109,7 +107,7 @@ update_timer_from_auction_id(AuctionID, NewTimerRef, OldTimerRef) ->
             OwnerID = AuctionHd#auction.owner_id,
             io:format("QUI OK ~n"),
             RecordsToDelete = mnesia:match_object({auction, AuctionID, OwnerID, OldTimerRef}),
-            io:format("RecordsToDelete : ~p~n" , [RecordsToDelete]),
+            io:format("RecordsToDelete : ~p~n", [RecordsToDelete]),
             mnesia:delete_object({auction, AuctionID, OwnerID, OldTimerRef}),
             %lists:foreach(fun(Record) -> mnesia:delete(Record) end, RecordsToDelete),
             io:format("DELETED~n"),

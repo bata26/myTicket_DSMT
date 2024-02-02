@@ -1,6 +1,6 @@
 -module(bid_server).
 
--export([join_auction/3, add_bid/6]).
+-export([join_auction/3, add_bid/6, end_auction/3]).
 
 -record(auction, {auction_id, owner_id, timer}).
 -record(users, {auction_id, user_pid, user_id}).
@@ -65,29 +65,31 @@ send_message_to_users(Message, UsersList, SenderID) ->
         UsersList
     ).
 
-
-update_timer(AuctionID,Pid) -> 
+update_timer(AuctionID, Pid, UserID, BidAmount) ->
     StringAuctionID = binary_to_list(AuctionID),
     ConvertedAuctionID = list_to_integer(StringAuctionID),
     Res = mnesia_manager:get_timer_from_auction_id(ConvertedAuctionID),
     Auction = hd(Res),
-    io:format("Single auction : ~p~n" , [Auction]),
+    io:format("Single auction : ~p~n", [Auction]),
     ActualTimerRef = Auction#auction.timer,
-    io:format("Actual Timer Ref : ~p~n" , [ActualTimerRef]),
-    
+    io:format("Actual Timer Ref : ~p~n", [ActualTimerRef]),
+
+    io:format("BID : ~p , USERID : ~p ~n" , [BidAmount , UserID]),
+
     case ActualTimerRef of
         -1 ->
             io:format("CREO IL NUOVO TIMER DA 0~n"),
-            TimerRef = erlang:send_after(25000, Pid, {bid_timeout, "END"}),
+            TimerRef = erlang:send_after(30000, Pid, {bid_timeout, {AuctionID , UserID, BidAmount}}),
             io:format("CREATO~n");
         _ ->
             io:format("CANCELLO IL VECCHIO TIMER E NE CREO UNO NUOVO~n"),
-            erlang:cancel(ActualTimerRef),
-            TimerRef = erlang:send_after(25000, Pid, {bid_timeout, "END"})
+            erlang:cancel_timer(ActualTimerRef),
+            TimerRef = erlang:send_after(30000, Pid, {bid_timeout, {AuctionID , UserID, BidAmount}}),
+            io:format("NUOVO TIMER CRREATO~n")
     end,
     io:format("AGGIORNO MNESIA~n"),
     mnesia_manager:update_timer_from_auction_id(ConvertedAuctionID, TimerRef, ActualTimerRef),
-    io:format("RES : ~p~n" , [Res]).
+    io:format("RES : ~p~n", [Res]).
 
 add_bid(Pid, UserID, AuctionID, BidAmount, Username, Timestamp) ->
     mnesia_manager:insert_bid(UserID, AuctionID, BidAmount, Username, Timestamp),
@@ -102,4 +104,22 @@ add_bid(Pid, UserID, AuctionID, BidAmount, Username, Timestamp) ->
         }
     ),
     send_message_to_users(Msg, Users, UserID),
-    update_timer(AuctionID, Pid).
+    update_timer(AuctionID, Pid, UserID, BidAmount).
+
+send_message_to_users(Message, UsersList) ->
+    lists:foreach(
+        fun(#users{user_pid = Pid, user_id = UserID} = User) ->
+            Pid ! {result, Message}
+        end,
+        UsersList
+    ).
+end_auction(AuctionID, WinnerID, BidAmount) ->
+    Users = mnesia_manager:get_users_from_auction_id(AuctionID),
+    Msg = jiffy:encode(
+        #{
+            <<"opcode">> => <<"END BID">>,
+            <<"winnerID">> => WinnerID,
+            <<"amount">> => BidAmount
+        }
+    ),
+    send_message_to_users(Msg, Users).
