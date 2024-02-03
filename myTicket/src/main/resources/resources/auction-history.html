@@ -44,7 +44,7 @@
             return true;
         }
         async function fetchBidList() {
-            const HISTORY_AUCTION_ENDPOINT = "http://192.168.105.128:8082/auction/history";
+            const HISTORY_AUCTION_ENDPOINT = "http://10.2.1.116:8082/auction/history";
             let body = {
                 "auctionID": localStorage.getItem("auctionID").toString()
             };

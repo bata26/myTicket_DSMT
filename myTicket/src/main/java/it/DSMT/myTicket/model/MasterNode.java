@@ -4,7 +4,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class MasterNode {
-    private final static String URL = "http://192.168.105.128:8082/auction";
+    private final static String URL = "http://10.2.1.116:8082/auction";
     public static void sendAuction(int auctionID, int userID) throws RuntimeException {
         try {
             // URL del server Erlang

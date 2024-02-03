@@ -66,6 +66,7 @@ send_message_to_users(Message, UsersList, SenderID) ->
     ).
 
 update_timer(AuctionID, Pid, UserID, BidAmount) ->
+    io:format("AGGIORNO TIMER~n"),
     StringAuctionID = binary_to_list(AuctionID),
     ConvertedAuctionID = list_to_integer(StringAuctionID),
     Res = mnesia_manager:get_timer_from_auction_id(ConvertedAuctionID),
@@ -74,17 +75,17 @@ update_timer(AuctionID, Pid, UserID, BidAmount) ->
     ActualTimerRef = Auction#auction.timer,
     io:format("Actual Timer Ref : ~p~n", [ActualTimerRef]),
 
-    io:format("BID : ~p , USERID : ~p ~n" , [BidAmount , UserID]),
+    io:format("BID : ~p , USERID : ~p ~n", [BidAmount, UserID]),
 
     case ActualTimerRef of
         -1 ->
             io:format("CREO IL NUOVO TIMER DA 0~n"),
-            TimerRef = erlang:send_after(30000, Pid, {bid_timeout, {AuctionID , UserID, BidAmount}}),
+            TimerRef = erlang:send_after(30000, Pid, {bid_timeout, {AuctionID, UserID, BidAmount}}),
             io:format("CREATO~n");
         _ ->
             io:format("CANCELLO IL VECCHIO TIMER E NE CREO UNO NUOVO~n"),
             erlang:cancel_timer(ActualTimerRef),
-            TimerRef = erlang:send_after(30000, Pid, {bid_timeout, {AuctionID , UserID, BidAmount}}),
+            TimerRef = erlang:send_after(30000, Pid, {bid_timeout, {AuctionID, UserID, BidAmount}}),
             io:format("NUOVO TIMER CRREATO~n")
     end,
     io:format("AGGIORNO MNESIA~n"),
@@ -93,8 +94,8 @@ update_timer(AuctionID, Pid, UserID, BidAmount) ->
 
 add_bid(Pid, UserID, AuctionID, BidAmount, Username, Timestamp) ->
     mnesia_manager:insert_bid(UserID, AuctionID, BidAmount, Username, Timestamp),
-    Pid ! {result, "OK"},
     Users = mnesia_manager:get_users_from_auction_id(AuctionID),
+    io:format("[DEBUG] USERS : ~p~n", Users),
     Msg = jiffy:encode(
         #{
             <<"opcode">> => <<"RECV BID">>,
@@ -103,8 +104,9 @@ add_bid(Pid, UserID, AuctionID, BidAmount, Username, Timestamp) ->
             <<"amount">> => BidAmount
         }
     ),
+    update_timer(AuctionID, Pid, UserID, BidAmount),
     send_message_to_users(Msg, Users, UserID),
-    update_timer(AuctionID, Pid, UserID, BidAmount).
+    Pid ! {result, "OK"}.
 
 send_message_to_users(Message, UsersList) ->
     lists:foreach(

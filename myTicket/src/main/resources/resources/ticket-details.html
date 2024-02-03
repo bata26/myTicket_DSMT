@@ -46,7 +46,7 @@
 
         async function getTicketDetails() {
             const ticketID = localStorage.getItem("ticketID");
-            const URL = "http://localhost:8080/ticket/" + ticketID;
+            const URL = "http://10.2.1.116:8080/ticket/" + ticketID;
             let res = {};
             await axios.get(URL)
                 .then(response => {
@@ -69,7 +69,7 @@
 
         async function checkIfAuctionExist() {
             const ticketID = localStorage.getItem("ticketID");
-            const URL = "http://localhost:8080/auction/ticket/" + ticketID;
+            const URL = "http://10.2.1.116:8080/auction/ticket/" + ticketID;
             let res = {};
             await axios.get(URL)
                 .then(response => {

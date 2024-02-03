@@ -109,16 +109,16 @@
 </body>
 <script>
     const FORM_ID = "add-form";
-    const ADD_TICKET_ENDPOINT = "http://localhost:8080/ticket";
+    const ADD_TICKET_ENDPOINT = "http://10.2.1.116:8080/ticket";
 
     document.getElementById(FORM_ID).addEventListener("submit", function (event) {
         event.preventDefault();
 
         const jsonData = {
-            "owner_id": localStorage.getItem("userID"),
+            "ownerID": parseInt(localStorage.getItem("userID")),
             "title": document.getElementById("add-title").value ,
             "date": document.getElementById("add-date").value ,
-            "hour": document.getElementById("add-hour").value ,
+            "hour": parseInt(document.getElementById("add-hour").value) ,
             "city": document.getElementById("add-city").value ,
             "artist": document.getElementById("add-artist").value 
         }
@@ -129,7 +129,7 @@
         axios.post(ADD_TICKET_ENDPOINT, jsonData)
             .then(response => {
                 console.log("Success:", response.data);
-                window.location.href = "home.html";
+                //window.location.href = "home.html";
             })
             .catch(error => {
                 console.error("Error:", error);

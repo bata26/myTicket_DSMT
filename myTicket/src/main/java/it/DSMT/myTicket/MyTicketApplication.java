@@ -3,7 +3,6 @@ package it.DSMT.myTicket;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import it.DSMT.myTicket.controller.DbController;
-import com.ericsson.otp.erlang.*;
 //import it.DSMT.myTicket.controller.UserController;
 
 @SpringBootApplication

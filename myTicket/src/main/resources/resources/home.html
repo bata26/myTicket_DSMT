@@ -45,7 +45,7 @@
         }
         async function fetchActiveTickets() {
             // fill the ticket list
-            const TICKET_ENDPOINT = "http://localhost:8080/ticket/active";
+            const TICKET_ENDPOINT = "http://10.2.1.116:8080/ticket/active";
             let res = {};
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {
@@ -77,7 +77,7 @@
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-body-secondary"><b>${ticket.artist}</b></h6>
                         <p class="card-text">${ticket.city} , ${ticket.date} at ${ticket.hour}</p>
-                        <button type="button" class="btn btn-outline-primary" onclick="navigateToAuctionDetail(${ticket.auctionID})"">Auction Details</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="navigateToAuctionDetail(${ticket.auctionID}, ${ticket.ticketID})"">Auction Details</button>
                     </div>
                     <br>
                 `;
@@ -86,8 +86,9 @@
                 homeMainCol.appendChild(cardElement);
             });
         }
-        function navigateToAuctionDetail(auctionID) {
+        function navigateToAuctionDetail(auctionID, ticketID) {
             localStorage.setItem("auctionID", auctionID);
+            localStorage.setItem("ticketID", ticketID);
             window.location.href = "auction-detail.html";
         }
         async function setupPage() {

@@ -46,7 +46,7 @@
 
         async function getTicketDetails() {
             const ticketID = localStorage.getItem("ticketID");
-            const URL = "http://localhost:8080/ticket/" + ticketID;
+            const URL = "http://10.2.1.116:8080/ticket/" + ticketID;
             let res = {};
             await axios.get(URL)
                 .then(response => {
@@ -192,7 +192,7 @@
 
     function bid() {
         const amount = document.getElementById("amount").value;
-        const URL = "ws://192.168.105.128:8081/ws";
+        const URL = "ws://10.2.1.117:8081/ws";
         let socket = new WebSocket(URL);
         let body = {}
 
@@ -214,8 +214,8 @@
             // Invia dati al server dopo l'apertura della connessione
             body = {
                 "opcode": "BID",
-                "auctionID": localStorage.getItem("auctionID"),
-                "userID": localStorage.getItem("userID"),
+                "auctionID": parseInt(localStorage.getItem("auctionID")),
+                "userID": parseInt(localStorage.getItem("userID")),
                 "username": "bata",
                 "amount": amount,
                 "ts": formattedDate,
@@ -262,7 +262,7 @@
     }
 
     function joinAuction() {
-        const URL = "ws://192.168.105.128:8081/ws";
+        const URL = "ws://10.2.1.117:8081/ws";
         let socket = new WebSocket(URL);
 
         socket.addEventListener('open', function (event) {
@@ -271,8 +271,8 @@
             // Invia dati al server dopo l'apertura della connessione
             let body = {
                 "opcode": "JOIN",
-                "auctionID": localStorage.getItem("auctionID"),
-                "userID": localStorage.getItem("userID"),
+                "auctionID": parseInt(localStorage.getItem("auctionID")),
+                "userID": parseInt(localStorage.getItem("userID")),
                 "username": "bata"
             }
             socket.send(JSON.stringify(body));
@@ -317,10 +317,10 @@
 
         socket.addEventListener('close', function (event) {
             console.log('Connessione chiusa');
-            setTimeout(() => {
-                document.getElementById("bid-list").innerHTML = "";
-                joinAuction();
-            }, 1000);
+            //setTimeout(() => {
+            //    document.getElementById("bid-list").innerHTML = "";
+            //    joinAuction();
+            //}, 1000);
         });
 
     }
