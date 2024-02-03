@@ -118,4 +118,16 @@ public class TicketView {
         }
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/ticket/closed")
+    public ResponseEntity<ActiveTicketListDTO> getClosedTickets(){
+        ActiveTicketListDTO response = new ActiveTicketListDTO();
+        try{
+            response.setTickets(TicketController.getClosedTickets());
+        } catch (NodeUnavailableException e){
+            System.out.println("[AUCTION VIEW] Impossible to get active auction");
+            return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok(response);
+    }
 }

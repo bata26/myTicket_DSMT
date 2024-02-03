@@ -46,6 +46,14 @@ public class TicketController {
         }
     }
 
+    public static List<ActiveTicketDTO> getClosedTickets() throws NodeUnavailableException{
+        try{
+            return Ticket.getClosedTickets();
+        }catch (NodeUnavailableException e){
+            throw e;
+        }
+    }
+
     public static Ticket getOneTicket(int ticketID) throws NodeUnavailableException, Exception {
         try{
             Ticket ticket = Ticket.getTicketFromID(ticketID);

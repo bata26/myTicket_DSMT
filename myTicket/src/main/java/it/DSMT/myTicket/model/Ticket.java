@@ -137,6 +137,29 @@ public class Ticket {
         return null;
     }
 
+    public static List<ActiveTicketDTO> getClosedTickets() throws NodeUnavailableException {
+        QueryResults res = DbController.getInstance().getConnection().Query(
+                "select * from ticket inner join auction on auction.ticket_id = ticket.id where auction.winner_id != -1",
+                Rqlite.ReadConsistencyLevel.STRONG);
+        Gson gson = new Gson();
+        String json = gson.toJson(res);
+        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+
+        List<ActiveTicketDTO> auctions = new ArrayList<>();
+
+        if (!jsonObject.has("error")) {
+            JsonArray values = jsonObject.getAsJsonArray("results")
+                    .get(0).getAsJsonObject()
+                    .getAsJsonArray("values");
+            for (JsonElement row : values) {
+                auctions.add(Ticket.parseQueryResultForActiveTicket(row));
+            }
+            System.out.println("ACTIVE : " + auctions);
+            return auctions;
+        }
+        return null;
+    }
+
     public static List<Ticket> getWinnedTicket(int ownerID) throws NodeUnavailableException {
         QueryResults res = DbController.getInstance().getConnection().Query(
                 "select * from ticket inner join auction on auction.ticket_id = ticket.id where auction.winner_id = " + ownerID,
