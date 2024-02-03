@@ -57,7 +57,7 @@
 			<artifactId>rqlite</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/rqlite-java.jar</systemPath>
+				<systemPath>${project.basedir}/src/main/resources/rqlite-java.jar</systemPath>
 		</dependency>
 	</dependencies>
 
