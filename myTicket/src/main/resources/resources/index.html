@@ -16,11 +16,13 @@
                 document.getElementById("ticketLink").style.display = "block";
                 document.getElementById("addLink").style.display = "block";
                 document.getElementById("profileLink").style.display = "block";
+                document.getElementById("oldAuctionLink").style.display = "block";
                 document.getElementById("loginLink").style.display = "none";
             } else {
                 document.getElementById("ticketLink").style.display = "none";
                 document.getElementById("profileLink").style.display = "none";
                 document.getElementById("addLink").style.display = "none";
+                document.getElementById("oldAuctionLink").style.display = "none";
                 document.getElementById("loginLink").style.display = "block";
             }
         });
@@ -40,6 +42,9 @@
                     </li>
                     <li id="ticketLink" class="nav-item" style="display: none;">
                         <a class="nav-link active" aria-current="page" href="tickets.html">Tickets</a>
+                    </li>
+                    <li id="oldAuctionLink" class="nav-item" style="display: none;">
+                        <a class="nav-link active" aria-current="page" href="old-auction.html">Old Auctions</a>
                     </li>
                     <li id="profileLink" class="nav-item" style="display: none;">
                         <a class="nav-link active" aria-current="page" href="profile.html">Profile</a>

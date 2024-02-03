@@ -20,11 +20,13 @@
                 document.getElementById("ticketLink").style.display = "block";
                 document.getElementById("addLink").style.display = "block";
                 document.getElementById("profileLink").style.display = "block";
+                document.getElementById("oldAuctionLink").style.display = "block";
                 document.getElementById("loginLink").style.display = "none";
             } else {
                 document.getElementById("ticketLink").style.display = "none";
                 document.getElementById("profileLink").style.display = "none";
                 document.getElementById("addLink").style.display = "none";
+                document.getElementById("oldAuctionLink").style.display = "none";
                 document.getElementById("loginLink").style.display = "block";
             }
         });
@@ -98,10 +100,8 @@
     </script>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="home.html">myTicket</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
+            <a class="navbar-brand" href="#">myTicket</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -111,6 +111,9 @@
                     </li>
                     <li id="ticketLink" class="nav-item" style="display: none;">
                         <a class="nav-link active" aria-current="page" href="tickets.html">Tickets</a>
+                    </li>
+                    <li id="oldAuctionLink" class="nav-item" style="display: none;">
+                        <a class="nav-link active" aria-current="page" href="old-auction.html">Old Auctions</a>
                     </li>
                     <li id="profileLink" class="nav-item" style="display: none;">
                         <a class="nav-link active" aria-current="page" href="profile.html">Profile</a>
@@ -124,7 +127,6 @@
                 </ul>
             </div>
         </div>
-
     </nav>
     <br>
     <div class="container">
