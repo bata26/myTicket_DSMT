@@ -38,7 +38,7 @@
         async function fetchTickets() {
             // fill the ticket list
             const TICKET_ENDPOINT = "http://10.2.1.116:8080/ticket/user/" + localStorage.getItem("userID");
-            let res = {};
+            let res = null;
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {
                     console.log("Success:", response.data);
@@ -52,7 +52,7 @@
         async function fetchWinnedTickets() {
             // fill the ticket list
             const TICKET_ENDPOINT = "http://10.2.1.116:8080/ticket/winner/" + localStorage.getItem("userID");
-            let res = {};
+            let res = null;
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {
                     console.log("Success:", response.data);
@@ -158,9 +158,9 @@
                 alert("Login to view content");
             }
             const responseData = await fetchTickets();
-            fillTicketsList(responseData);
+            if (responseData !== null) fillTicketsList(responseData);
             const winnedTickets = await fetchWinnedTickets();
-            fillWinnedTicketsList(winnedTickets);
+            if (winnedTickets !== null) fillWinnedTicketsList(winnedTickets);
         }
     </script>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">

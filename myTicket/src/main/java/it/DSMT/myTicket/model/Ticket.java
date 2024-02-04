@@ -114,7 +114,7 @@ public class Ticket {
         return null;
     }
 
-    public static List<ActiveTicketDTO> getActiveTickets() throws NodeUnavailableException {
+    public static List<ActiveTicketDTO> getActiveTickets() throws NodeUnavailableException, Exception {
         QueryResults res = DbController.getInstance().getConnection().Query(
                 "select * from ticket inner join auction on auction.ticket_id = ticket.id where auction.winner_id = -1",
                 Rqlite.ReadConsistencyLevel.STRONG);
@@ -123,16 +123,19 @@ public class Ticket {
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
         List<ActiveTicketDTO> auctions = new ArrayList<>();
-
-        if (!jsonObject.has("error")) {
-            JsonArray values = jsonObject.getAsJsonArray("results")
-                    .get(0).getAsJsonObject()
-                    .getAsJsonArray("values");
-            for (JsonElement row : values) {
-                auctions.add(Ticket.parseQueryResultForActiveTicket(row));
+        try{
+            if (!jsonObject.has("error")) {
+                JsonArray values = jsonObject.getAsJsonArray("results")
+                        .get(0).getAsJsonObject()
+                        .getAsJsonArray("values");
+                for (JsonElement row : values) {
+                    auctions.add(Ticket.parseQueryResultForActiveTicket(row));
+                }
+                System.out.println("ACTIVE : " + auctions);
+                return auctions;
             }
-            System.out.println("ACTIVE : " + auctions);
-            return auctions;
+        }catch(Exception e){
+            throw e;
         }
         return null;
     }
@@ -160,7 +163,7 @@ public class Ticket {
         return null;
     }
 
-    public static List<Ticket> getWinnedTicket(int ownerID) throws NodeUnavailableException {
+    public static List<Ticket> getWinnedTicket(int ownerID) throws NodeUnavailableException, , Exception {
         QueryResults res = DbController.getInstance().getConnection().Query(
                 "select * from ticket inner join auction on auction.ticket_id = ticket.id where auction.winner_id = " + ownerID,
                 Rqlite.ReadConsistencyLevel.STRONG);
@@ -169,21 +172,24 @@ public class Ticket {
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
         List<Ticket> tickets = new ArrayList<>();
-
-        if (!jsonObject.has("error")) {
-            JsonArray values = jsonObject.getAsJsonArray("results")
-                    .get(0).getAsJsonObject()
-                    .getAsJsonArray("values");
-            for (JsonElement row : values) {
-                tickets.add(Ticket.parseQueryResult(row));
+        try{
+            if (!jsonObject.has("error")) {
+                JsonArray values = jsonObject.getAsJsonArray("results")
+                        .get(0).getAsJsonObject()
+                        .getAsJsonArray("values");
+                for (JsonElement row : values) {
+                    auctions.add(Ticket.parseQueryResultForActiveTicket(row));
+                }
+                System.out.println("ACTIVE : " + auctions);
+                return auctions;
             }
-            System.out.println("OWNED : " + tickets);
-            return tickets;
+        }catch(Exception e){
+            throw e;
         }
         return null;
     }
 
-    public static List<Ticket> getTicketFromOwner(int ownerID) throws NodeUnavailableException {
+    public static List<Ticket> getTicketFromOwner(int ownerID) throws NodeUnavailableException, Exception {
         QueryResults res = DbController.getInstance().getConnection().Query(
                 "select * from ticket where owner_id = " + ownerID,
                 Rqlite.ReadConsistencyLevel.STRONG);
@@ -192,16 +198,19 @@ public class Ticket {
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
         List<Ticket> tickets = new ArrayList<>();
-
-        if (!jsonObject.has("error")) {
-            JsonArray values = jsonObject.getAsJsonArray("results")
-                    .get(0).getAsJsonObject()
-                    .getAsJsonArray("values");
-            for (JsonElement row : values) {
-                tickets.add(Ticket.parseQueryResult(row));
+        try{
+            if (!jsonObject.has("error")) {
+                JsonArray values = jsonObject.getAsJsonArray("results")
+                        .get(0).getAsJsonObject()
+                        .getAsJsonArray("values");
+                for (JsonElement row : values) {
+                    tickets.add(Ticket.parseQueryResult(row));
+                }
+                System.out.println("OWNED : " + tickets);
+                return tickets;
             }
-            System.out.println("OWNED : " + tickets);
-            return tickets;
+        }catch(Exception e){
+            throw e;
         }
         return null;
     }

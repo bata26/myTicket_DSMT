@@ -107,7 +107,7 @@ terminate(Reason, State) ->
 
 make_http_request(AuctionID, WinnerID, LastBid) ->
     % Sostituisci con l'URL del tuo server Java
-    URL = "http://192.168.10.20:8080/close/auction",
+    URL = "http://10.2.1.116:8080/close/auction",
     Method = post,
     % Sostituisci con gli header necessari
     Headers = [{"Content-Type", "application/json"}],

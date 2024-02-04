@@ -23,8 +23,20 @@ get_bids_from_auction_id(AuctionID) ->
 
 join_auction(Pid, AuctionID, UserID) ->
     Fun = fun() ->
-        NewRecord = #users{auction_id = AuctionID, user_pid = Pid, user_id = UserID},
-        mnesia:write(NewRecord)
+        io:format("PRE READ~n"),
+        % Tenta di leggere il record esistente dal database
+        ExistingRecord = mnesia:match_object({users, AuctionID, '_', UserID}),
+        io:format("EXISTING RECORD : ~p~n" , [ExistingRecord]),
+        case ExistingRecord of
+            % Se il record esiste, aggiorna il campo user_pid
+            [#users{user_id = UserID} = OldRecord] ->
+                UpdatedRecord = OldRecord#users{user_pid = Pid},
+                mnesia:write(UpdatedRecord);
+            % Se il record non esiste, crea un nuovo record
+            [] ->
+                NewRecord = #users{auction_id = AuctionID, user_pid = Pid, user_id = UserID},
+                mnesia:write(NewRecord)
+        end
     end,
     {atomic, Result} = mnesia:transaction(Fun),
     io:format("[mnesia_manager] join_auction => Chatroom join request returned response: ~p~n", [

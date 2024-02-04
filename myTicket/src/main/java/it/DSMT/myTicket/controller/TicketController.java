@@ -38,10 +38,12 @@ public class TicketController {
         }
     }
 
-    public static List<ActiveTicketDTO> getActiveTickets() throws NodeUnavailableException{
+    public static List<ActiveTicketDTO> getActiveTickets() throws NodeUnavailableException, Exception{
         try{
             return Ticket.getActiveTickets();
         }catch (NodeUnavailableException e){
+            throw e;
+        }catch (Exception e){
             throw e;
         }
     }
@@ -65,18 +67,22 @@ public class TicketController {
         }
     }
 
-    public static List<Ticket> getOwnedTicket(int ownerID) throws NodeUnavailableException {
+    public static List<Ticket> getOwnedTicket(int ownerID) throws NodeUnavailableException, Exception {
         try{
             return Ticket.getTicketFromOwner(ownerID);
         } catch (NodeUnavailableException e){
             throw e;
+        }catch (Exception e){
+            throw e;
         }
     } 
 
-    public static List<Ticket> getWinnedTicket(int userID) throws NodeUnavailableException {
+    public static List<Ticket> getWinnedTicket(int userID) throws NodeUnavailableException, Exception {
         try{
             return Ticket.getWinnedTicket(userID);
         } catch (NodeUnavailableException e){
+            throw e;
+        } catch (Exception e){
             throw e;
         }
     } 

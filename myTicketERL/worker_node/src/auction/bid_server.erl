@@ -67,9 +67,7 @@ send_message_to_users(Message, UsersList, SenderID) ->
 
 update_timer(AuctionID, Pid, UserID, BidAmount) ->
     io:format("AGGIORNO TIMER~n"),
-    StringAuctionID = binary_to_list(AuctionID),
-    ConvertedAuctionID = list_to_integer(StringAuctionID),
-    Res = mnesia_manager:get_timer_from_auction_id(ConvertedAuctionID),
+    Res = mnesia_manager:get_timer_from_auction_id(AuctionID),
     Auction = hd(Res),
     io:format("Single auction : ~p~n", [Auction]),
     ActualTimerRef = Auction#auction.timer,
@@ -89,13 +87,13 @@ update_timer(AuctionID, Pid, UserID, BidAmount) ->
             io:format("NUOVO TIMER CRREATO~n")
     end,
     io:format("AGGIORNO MNESIA~n"),
-    mnesia_manager:update_timer_from_auction_id(ConvertedAuctionID, TimerRef, ActualTimerRef),
+    mnesia_manager:update_timer_from_auction_id(AuctionID, TimerRef, ActualTimerRef),
     io:format("RES : ~p~n", [Res]).
 
 add_bid(Pid, UserID, AuctionID, BidAmount, Username, Timestamp) ->
     mnesia_manager:insert_bid(UserID, AuctionID, BidAmount, Username, Timestamp),
     Users = mnesia_manager:get_users_from_auction_id(AuctionID),
-    io:format("[DEBUG] USERS : ~p~n", Users),
+    io:format("[DEBUG] USERS : ~p~n", [Users]),
     Msg = jiffy:encode(
         #{
             <<"opcode">> => <<"RECV BID">>,
