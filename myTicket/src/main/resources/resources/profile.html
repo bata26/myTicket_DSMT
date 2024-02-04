@@ -41,8 +41,10 @@
             let res = null;
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {
+                    if (response.status === 200) {
+                        res = response.data;
+                    }
                     console.log("Success:", response.data);
-                    res = response.data;
                 })
                 .catch(error => {
                     console.error("Error:", error);
@@ -55,9 +57,11 @@
             let res = null;
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {
+                    if (response.status === 200) {
+                        res = response.data;
+                    }
                     console.log("Success:", response.data);
-                    res = response.data;
-                })
+                    })
                 .catch(error => {
                     console.error("Error:", error);
                 });
@@ -158,8 +162,10 @@
                 alert("Login to view content");
             }
             const responseData = await fetchTickets();
+            console.log("response DATA : " , responseData);
             if (responseData !== null) fillTicketsList(responseData);
             const winnedTickets = await fetchWinnedTickets();
+            console.log("WINNED DATA : " , winnedTickets);
             if (winnedTickets !== null) fillWinnedTicketsList(winnedTickets);
         }
     </script>
