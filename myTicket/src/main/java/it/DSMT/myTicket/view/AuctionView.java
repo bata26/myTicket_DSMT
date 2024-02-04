@@ -92,4 +92,18 @@ public class AuctionView {
         }
         return new ResponseEntity<>("Auction closed!", HttpStatus.OK);
     }
+
+    @GetMapping("/auction/history/{auction_id}")
+    public ResponseEntity<String> getAuctionHistory(@PathVariable("auction_id") int auctionID){
+        String result = "";
+        try{
+            result = AuctionController.getAuctionHistory(auctionID);
+        } catch (Exception e){
+        System.out.println("[AUCTION VIEW] Impossible to get auction history");
+            return new ResponseEntity<>("NOT_FOUNT" , HttpStatus.NOT_FOUND);
+
+        }
+        System.out.println("RESULT " + result);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

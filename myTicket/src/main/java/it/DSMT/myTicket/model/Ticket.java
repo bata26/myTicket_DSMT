@@ -163,7 +163,7 @@ public class Ticket {
         return null;
     }
 
-    public static List<Ticket> getWinnedTicket(int ownerID) throws NodeUnavailableException, , Exception {
+    public static List<Ticket> getWinnedTicket(int ownerID) throws NodeUnavailableException,Exception {
         QueryResults res = DbController.getInstance().getConnection().Query(
                 "select * from ticket inner join auction on auction.ticket_id = ticket.id where auction.winner_id = " + ownerID,
                 Rqlite.ReadConsistencyLevel.STRONG);
@@ -178,10 +178,10 @@ public class Ticket {
                         .get(0).getAsJsonObject()
                         .getAsJsonArray("values");
                 for (JsonElement row : values) {
-                    auctions.add(Ticket.parseQueryResultForActiveTicket(row));
+                    tickets.add(Ticket.parseQueryResult(row));
                 }
-                System.out.println("ACTIVE : " + auctions);
-                return auctions;
+                System.out.println("ACTIVE : " + tickets);
+                return tickets;
             }
         }catch(Exception e){
             throw e;

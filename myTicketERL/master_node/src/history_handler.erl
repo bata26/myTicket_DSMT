@@ -4,7 +4,6 @@
 %% Callback Callbacks
 -export([allowed_methods/2]).
 -export([content_types_accepted/2]).
-%-export([content_types_provided/2]).
 -export([resource_exists/2]).
 -export([commands/2]).
 
@@ -23,7 +22,7 @@ init(Req, State) ->
     {cowboy_rest, Req, State}.
 
 allowed_methods(Req, State) ->
-    {[<<"GET">>], Req, State}.
+    {[<<"GET">> , <<"POST">>], Req, State}.
 
 commands(Req, State) ->
     {reply, State, Req}.
@@ -59,7 +58,7 @@ iter_bid_list([Bid | Rest], Acc) ->
     TsTuple = {<<"ts">>, Ts},
     iter_bid_list(Rest, [AuctionTuple, UserTuple, UsernameTuple, AmountTuple, TsTuple | Acc]).
 
-handle(<<"GET">>, true, Req) ->
+handle(_, true, Req) ->
     io:format("Handling request in handle/2~n", []),
     {ok, Body, Req2} = cowboy_req:read_body(Req, #{length => infinity}),
 
@@ -79,8 +78,8 @@ handle(<<"GET">>, true, Req) ->
         200,
         #{<<"content-type">> => <<"text/plain">>},
         BinString,
-        Req
-    ),
+        Req2
+        ),
     io:format("Response sent from handle/2~n");
 handle(_, _, Req) ->
     cowboy_req:reply(

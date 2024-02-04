@@ -4,7 +4,6 @@
 %% Callback Callbacks
 -export([allowed_methods/2]).
 -export([content_types_accepted/2]).
-%-export([content_types_provided/2]).
 -export([resource_exists/2]).
 -export([commands/2]).
 
@@ -26,15 +25,6 @@ allowed_methods(Req, State) ->
 commands(Req, State) ->
     {reply, State, Req}.
 
-%content_types_provided(Req, State) ->
-%    {
-%        [
-%            {<<"text">> , <<"plain">>, handle},
-%            {<<"text/plain">>, handle}
-%        ],
-%        Req,
-%        State
-%    }.
 
 content_types_accepted(Req, State) ->
     {

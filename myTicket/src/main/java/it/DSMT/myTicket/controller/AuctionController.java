@@ -58,4 +58,22 @@ public class AuctionController {
         }
     }
 
+    public static String getAuctionHistory(int auctionID) throws RuntimeException{
+        try{
+            String res = MasterNode.getAuctionHistory(auctionID);
+            String charsToRemove = "{";
+            for (char c : charsToRemove.toCharArray()) {
+                res = res.replace(String.valueOf(c), "");
+            }
+            charsToRemove = "}";
+            for (char c : charsToRemove.toCharArray()) {
+                res = res.replace(String.valueOf(c), "");
+            }
+            System.out.println("Response Body: " + res);
+            return res;
+        }catch(RuntimeException e){
+            throw e;
+        }
+    }
+
 }
