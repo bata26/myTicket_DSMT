@@ -178,6 +178,10 @@ docker run  -p 4001:4001 -p 4002:4002 -v rqlite-dir:/rqlite/file rqlite/rqlite -
 
 mvn install:install-file -Dfile=/usr/local/Cellar/erlang/26.0.2/lib/erlang/lib/jinterface-1.14/priv/OtpErlang.jar -DgroupId=com.ericsson -DartifactId=erlang-jinterface -Dversion=1.14 -Dpackaging=jar -DgeneratePom=true
 
+
+./rqlited -node-id 1 -http-addr 10.2.1.116:4001 -raft-addr 10.2.1.116:4002 data/
+
+./rqlited -node-id 2 -http-addr 10.2.1.117:4001 -raft-addr 10.2.1.117:4002 -join 10.2.1.116:4002 data/
 # MNESIA DATABASE:
 - auction:
     auctionID
