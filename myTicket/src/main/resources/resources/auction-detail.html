@@ -192,7 +192,7 @@
 
     function bid() {
         const amount = document.getElementById("amount").value;
-        const URL = "ws://10.2.1.117:8081/ws";
+        const URL = "ws://10.2.1.116:8083/ws";
         let socket = new WebSocket(URL);
         let body = {}
 
@@ -264,7 +264,7 @@
     }
 
     function joinAuction() {
-        const URL = "ws://10.2.1.117:8081/ws";
+        const URL = "ws://10.2.1.116:8083/ws";
         let socket = new WebSocket(URL);
 
         socket.addEventListener('open', function (event) {
