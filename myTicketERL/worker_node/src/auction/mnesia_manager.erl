@@ -4,7 +4,7 @@
     insert_bid/5,
     join_auction/3,
     get_users_from_auction_id/1,
-    get_timer_from_auction_id/1,
+    get_auction_from_auction_id/1,
     update_timer_from_auction_id/3
 ]).
 
@@ -90,7 +90,7 @@ get_users_from_auction_id(AuctionID) ->
     io:format("[mnesia_manager] get_online_students => Online users: ~p~n", [Result]),
     Result.
 
-get_timer_from_auction_id(AuctionID) ->
+get_auction_from_auction_id(AuctionID) ->
     Fun =
         fun() ->
             mnesia:match_object({auction, AuctionID, '_', '_'})

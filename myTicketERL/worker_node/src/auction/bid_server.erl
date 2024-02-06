@@ -1,6 +1,6 @@
 -module(bid_server).
 
--export([join_auction/3, add_bid/6, end_auction/3]).
+-export([join_auction/3, add_bid/6, end_auction/3, check_if_can_bid/2]).
 
 -record(auction, {auction_id, owner_id, timer}).
 -record(users, {auction_id, user_pid, user_id}).
@@ -67,7 +67,7 @@ send_message_to_users(Message, UsersList, SenderID) ->
 
 update_timer(AuctionID, Pid, UserID, BidAmount) ->
     io:format("AGGIORNO TIMER~n"),
-    Res = mnesia_manager:get_timer_from_auction_id(AuctionID),
+    Res = mnesia_manager:get_auction_from_auction_id(AuctionID),
     Auction = hd(Res),
     io:format("Single auction : ~p~n", [Auction]),
     ActualTimerRef = Auction#auction.timer,
@@ -90,6 +90,16 @@ update_timer(AuctionID, Pid, UserID, BidAmount) ->
     mnesia_manager:update_timer_from_auction_id(AuctionID, TimerRef, ActualTimerRef),
     io:format("RES : ~p~n", [Res]).
 
+check_if_can_bid(UserID, AuctionID) ->
+    Res = mnesia_manager:get_auction_from_auction_id(AuctionID),
+    Auction = hd(Res),
+    OwnerID = Auction#auction.owner_id,
+    Ret = 
+        case OwnerID == UserID of
+            true -> false;
+            false -> true
+        end,
+    Ret.
 add_bid(Pid, UserID, AuctionID, BidAmount, Username, Timestamp) ->
     mnesia_manager:insert_bid(UserID, AuctionID, BidAmount, Username, Timestamp),
     Users = mnesia_manager:get_users_from_auction_id(AuctionID),

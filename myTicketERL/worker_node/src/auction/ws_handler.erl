@@ -71,7 +71,13 @@ handle_bid(Map, State) ->
         "[ws_handler] handle_login => userID: ~p , auctionID: ~p , amount: ~p ts: ~p ~n",
         [UserID, AuctionID, BidAmount, Timestamp]
     ),
-    bid_server:add_bid(self(), UserID, AuctionID, BidAmount, Username, Timestamp),
+    case bid_server:check_if_can_bid(UserID, AuctionID) of
+        true ->
+            bid_server:add_bid(self(), UserID, AuctionID, BidAmount, Username, Timestamp);
+        false ->
+            Msg = jiffy:encode(#{<<"res">> => <<"CANT BID">>}),
+            self() ! {result, Msg}
+    end,
     {ok, State}.
 
 % Cowboy will call websocket_info/2 whenever an Erlang message arrives
