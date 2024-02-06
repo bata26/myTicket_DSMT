@@ -112,6 +112,7 @@
                 console.log("Success:", response.data);
                 localStorage.setItem("loggedIn" , true);
                 localStorage.setItem("userID" , response.data["userID"]);
+                localStorage.setItem("username" , document.getElementById("login-username").value);
                 window.location.href = "home.html";
             })
             .catch(error => {
