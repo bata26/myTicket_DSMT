@@ -226,7 +226,7 @@
         socket.addEventListener('message', function (event) {
             var data = event.data;
             console.log(new Date(), 'Dati ricevuti:', data);
-
+            
             if (data == "OK") {
                 console.log(body);
                 var bidListElement = document.getElementById("bid-list");
@@ -237,6 +237,8 @@
                 nuovoDiv.innerHTML += "<b>" + body.amount + "</b><br>";
                 nuovoDiv.innerHTML += "<hr>";
                 bidListElement.appendChild(nuovoDiv);
+            }else if(JSON.parse(data)["res"] == "CANT BID"){
+                alert("You can't bid on your own ticket");
             }
         });
         socket.addEventListener('error', function (event) {
