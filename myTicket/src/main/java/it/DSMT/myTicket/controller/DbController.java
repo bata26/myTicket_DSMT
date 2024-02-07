@@ -33,7 +33,7 @@ public  class DbController {
 
     public DbController () throws NodeUnavailableException {
         // Get a connection to a rqlite node.
-        this.connection = RqliteFactory.connect("http", "10.2.1.116", 4001);
+        this.connection = RqliteFactory.connect("http", "10.2.1.117", 4001);
 
         // Create a table.
         System.out.println("[DB] CREATE USER TABLE");
