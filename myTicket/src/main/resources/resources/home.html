@@ -45,7 +45,7 @@
         }
         async function fetchActiveTickets() {
             // fill the ticket list
-            const TICKET_ENDPOINT = "http://10.2.1.116:8080/ticket/active";
+            const TICKET_ENDPOINT = "http://10.2.1.116:80/ticket/active";
             let res = {};
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {

@@ -45,7 +45,7 @@
         }
         async function fetchTickets() {
             // fill the ticket list
-            const TICKET_ENDPOINT = "http://10.2.1.116:8080/tickets";
+            const TICKET_ENDPOINT = "http://10.2.1.116:80/tickets";
             let res = {};
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {
@@ -171,7 +171,7 @@
 </body>
 <script>
     const loginFormID = "home-form";
-    const LOGIN_ENDPOINT = "http://10.2.1.116:8080/ticket"
+    const LOGIN_ENDPOINT = "http://10.2.1.116:80/ticket"
     document.getElementById(loginFormID).addEventListener("submit", function (event) {
         event.preventDefault();
 

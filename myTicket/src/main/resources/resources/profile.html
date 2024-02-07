@@ -37,7 +37,7 @@
     <script>
         async function fetchTickets() {
             // fill the ticket list
-            const TICKET_ENDPOINT = "http://10.2.1.116:8080/ticket/user/" + localStorage.getItem("userID");
+            const TICKET_ENDPOINT = "http://10.2.1.116:80/ticket/user/" + localStorage.getItem("userID");
             let res = null;
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {
@@ -53,7 +53,7 @@
         }
         async function fetchWinnedTickets() {
             // fill the ticket list
-            const TICKET_ENDPOINT = "http://10.2.1.116:8080/ticket/winner/" + localStorage.getItem("userID");
+            const TICKET_ENDPOINT = "http://10.2.1.116:80/ticket/winner/" + localStorage.getItem("userID");
             let res = null;
             await axios.get(TICKET_ENDPOINT)
                 .then(response => {
@@ -129,9 +129,9 @@
             });
         }
         async function createAuction(ticketID) {
-            // 10.2.1.116:8080/auction/ticket/1000
-            const ENDPOINT = "http://10.2.1.116:8080/auction/ticket/" + ticketID;
-            const CREATE_AUCTION_ENDPOINT = "http://10.2.1.116:8080/auction";
+            // 10.2.1.116:80/auction/ticket/1000
+            const ENDPOINT = "http://10.2.1.116:80/auction/ticket/" + ticketID;
+            const CREATE_AUCTION_ENDPOINT = "http://10.2.1.116:80/auction";
             console.log("INVIO LA RICHIESTA A : " , ENDPOINT)
             await axios.get(ENDPOINT)
                 .then(response => {

@@ -44,7 +44,7 @@
             return true;
         }
         async function fetchBidList() {
-            const HISTORY_AUCTION_ENDPOINT = "http://10.2.1.116:8080/auction/history/" +localStorage.getItem("auctionID") ;
+            const HISTORY_AUCTION_ENDPOINT = "http://10.2.1.116:80/auction/history/" +localStorage.getItem("auctionID") ;
             let res = '';
             //return res;
             await axios.get(HISTORY_AUCTION_ENDPOINT)

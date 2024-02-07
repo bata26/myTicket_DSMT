@@ -39,7 +39,7 @@
             return true;
         }
         async function fetchClosedAuction(){
-            const CLOSED_AUCTION_ENDPOINT = "http://10.2.1.116:8080/ticket/closed";
+            const CLOSED_AUCTION_ENDPOINT = "http://10.2.1.116:80/ticket/closed";
             let res = {};
             await axios.get(CLOSED_AUCTION_ENDPOINT)
                 .then(response => {
