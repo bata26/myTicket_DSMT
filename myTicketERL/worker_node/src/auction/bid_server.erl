@@ -63,11 +63,11 @@ update_timer(AuctionID, Pid, UserID, BidAmount) ->
     Auction = hd(Res),
     ActualTimerRef = Auction#auction.timer,
     case ActualTimerRef of
-        -1 -;
+        -1 ->
             TimerRef = erlang:send_after(30000, Pid, {bid_timeout, {AuctionID, UserID, BidAmount}});
         _ ->
             erlang:cancel_timer(ActualTimerRef),
-            TimerRef = erlang:send_after(30000, Pid, {bid_timeout, {AuctionID, UserID, BidAmount}}),
+            TimerRef = erlang:send_after(30000, Pid, {bid_timeout, {AuctionID, UserID, BidAmount}})
     end,
     mnesia_manager:update_timer_from_auction_id(AuctionID, TimerRef, ActualTimerRef).
 
