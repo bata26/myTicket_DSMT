@@ -134,7 +134,6 @@
             // 10.2.1.116:80/auction/ticket/1000
             const ENDPOINT = "http://10.2.1.116:80/auction/ticket/" + ticketID;
             const CREATE_AUCTION_ENDPOINT = "http://10.2.1.116:80/auction";
-            console.log("INVIO LA RICHIESTA A : ", ENDPOINT)
             await axios.get(ENDPOINT)
                 .then(response => {
                     alert("Auction Already exists for this ticket");
@@ -146,7 +145,6 @@
                     await axios.post(CREATE_AUCTION_ENDPOINT, body)
                         .then(response => {
                             alert("Auction created!");
-                            console.log("Success:", response.data.auctionID);
                             localStorage.setItem("auctionID", response.data.auctionID);
                             window.location.href = "auction-detail.html";
                         })
@@ -164,10 +162,8 @@
                 alert("Login to view content");
             }
             const responseData = await fetchTickets();
-            console.log("response DATA : ", responseData);
             if (responseData !== null) fillTicketsList(responseData);
             const winnedTickets = await fetchWinnedTickets();
-            console.log("WINNED DATA : ", winnedTickets);
             if (winnedTickets !== null) fillWinnedTicketsList(winnedTickets);
         }
     </script>

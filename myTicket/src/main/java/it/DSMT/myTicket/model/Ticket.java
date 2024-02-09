@@ -70,13 +70,11 @@ public class Ticket {
 
     public void removeTicket() throws NodeUnavailableException {
         String query = "DELETE FROM ticket WHERE id = " + this.id;
-        System.out.println(query);
         DbController.getInstance().getConnection().Execute(query);
     }
 
     public void addTicket() throws NodeUnavailableException{
         String query = "INSERT INTO ticket(owner_id, title, date, hour, city, artist) values( " +this.ownerID + ",'" +this.title+ "', '" +this.date+ "'," + this.hour + ",'" +this.city+ "')";
-        System.out.println(query);
         DbController.getInstance().getConnection().Execute("INSERT INTO ticket(owner_id, title, date, hour, city, artist) values( \n"+
                 this.ownerID + ",\n" +
                 "'" +this.title+ "',\n" +
@@ -94,7 +92,6 @@ public class Ticket {
             query = query + "WHERE title LIKE '%" + title+"%'";
         }
         QueryResults res = DbController.getInstance().getConnection().Query(query,  Rqlite.ReadConsistencyLevel.STRONG);
-        System.out.println("RES: " + res.results[0]);
 
         Gson gson = new Gson();
         String json = gson.toJson(res);
@@ -131,7 +128,6 @@ public class Ticket {
                 for (JsonElement row : values) {
                     auctions.add(Ticket.parseQueryResultForActiveTicket(row));
                 }
-                System.out.println("ACTIVE : " + auctions);
                 return auctions;
             }
         }catch(Exception e){
@@ -157,7 +153,6 @@ public class Ticket {
             for (JsonElement row : values) {
                 auctions.add(Ticket.parseQueryResultForActiveTicket(row));
             }
-            System.out.println("ACTIVE : " + auctions);
             return auctions;
         }
         return null;
@@ -180,7 +175,6 @@ public class Ticket {
                 for (JsonElement row : values) {
                     tickets.add(Ticket.parseQueryResult(row));
                 }
-                System.out.println("ACTIVE : " + tickets);
                 return tickets;
             }
         }catch(Exception e){
@@ -206,7 +200,6 @@ public class Ticket {
                 for (JsonElement row : values) {
                     tickets.add(Ticket.parseQueryResult(row));
                 }
-                System.out.println("OWNED : " + tickets);
                 return tickets;
             }
         }catch(Exception e){
@@ -216,9 +209,6 @@ public class Ticket {
     }
 
     private static ActiveTicketDTO parseQueryResultForActiveTicket(JsonElement element) {
-        System.out.println("elem : " + element);
-        // id | title| date | hour | city | owner_id | artist | id | final_bid |
-        // ticket_id | winner_id
         int ticketID = element.getAsJsonArray().get(0).getAsInt();
         String title = element.getAsJsonArray().get(1).getAsString();
 

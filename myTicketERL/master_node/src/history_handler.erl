@@ -41,14 +41,11 @@ resource_exists(Req, State) ->
     {false, Req, State}.
 
 iter_bid_list(Bids) ->
-    io:format("1~n"),
     iter_bid_list(Bids, []).
 
 iter_bid_list([], Acc) ->
-    io:format("2~n"),
     lists:reverse(Acc);
 iter_bid_list([Bid | Rest], Acc) ->
-    io:format("3~n"),
     #bid{auction_id = AuctionID, user_id = UserID, username = Username, amount = Amount, ts = Ts} =
         Bid,
     AuctionTuple = {<<"auction_id">>, AuctionID},
@@ -59,20 +56,14 @@ iter_bid_list([Bid | Rest], Acc) ->
     iter_bid_list(Rest, [AuctionTuple, UserTuple, UsernameTuple, AmountTuple, TsTuple | Acc]).
 
 handle(_, true, Req) ->
-    io:format("Handling request in handle/2~n", []),
+    io:format("[HISTORY HANDLER] Handling request in handle/3~n", []),
     {ok, Body, Req2} = cowboy_req:read_body(Req, #{length => infinity}),
 
     {ParsedBody} = jiffy:decode(Body),
-    io:format("Parsed JSON: ~p~n", [ParsedBody]),
     AuctionID = proplists:get_value(<<"auctionID">>, ParsedBody),
-    io:format("auctionID : ~p~n", [AuctionID]),
-    io:format("Inserisco nella tabella~n"),
     History = mnesia_manager:get_auction_history(AuctionID),
-    io:format("HISTORY : ~p~n", [History]),
     ResultList = {iter_bid_list(History)},
-    io:format("RESULTLIST : ~p~n", [ResultList]),
     JsonString = jiffy:encode(ResultList),
-    io:format("ENCODED HISTORY : ~p~n", [JsonString]),
     BinString = iolist_to_binary([JsonString]),
     Resp = cowboy_req:reply(
         200,
@@ -80,7 +71,7 @@ handle(_, true, Req) ->
         BinString,
         Req2
         ),
-    io:format("Response sent from handle/2~n");
+    io:format("HISTORY HANDLER] Response sent from handle/3~n");
 handle(_, _, Req) ->
     cowboy_req:reply(
         200,

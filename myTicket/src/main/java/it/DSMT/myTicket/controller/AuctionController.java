@@ -37,7 +37,6 @@ public class AuctionController {
     public static Auction getAuction(int id, boolean ticket) throws NodeUnavailableException, Exception {
         try {
             if (ticket == true) {
-                System.out.println("TICKET");
                 return Auction.getOneFromTicketID(id);
             } else {
                 return Auction.getOne(id);
@@ -69,7 +68,6 @@ public class AuctionController {
             for (char c : charsToRemove.toCharArray()) {
                 res = res.replace(String.valueOf(c), "");
             }
-            System.out.println("Response Body: " + res);
             return res;
         }catch(RuntimeException e){
             throw e;

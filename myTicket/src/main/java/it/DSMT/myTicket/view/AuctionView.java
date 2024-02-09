@@ -24,7 +24,6 @@ public class AuctionView {
     public ResponseEntity<CreatedAuctionDTO> createAuction(@RequestBody CreateAuctionDTO auction){
         CreatedAuctionDTO response = new CreatedAuctionDTO();
         try{
-            System.out.println("TicketID: " + auction.getTicketID());
             response.setAuctionID(AuctionController.createAuction(auction.getTicketID(), auction.getUserID()));
         } catch (NodeUnavailableException e){
             System.out.println("[AUCTION VIEW] Impossible to create auction");
@@ -53,10 +52,10 @@ public class AuctionView {
         try{
             response = AuctionController.getAuction(idAuction, false);
         } catch (NodeUnavailableException e){
-            System.out.println("[AUCTION VIEW] Impossible to get auction");
+            System.out.println("[AUCTION VIEW] Impossible to get auction from auction id");
             return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            System.out.println("[AUCTION VIEW] Impossible to get auction because auction doesn't exists");
+            System.out.println("[AUCTION VIEW] Impossible to get auction from auction id because auction doesn't exists");
             return new ResponseEntity<>(null , HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(response);
@@ -68,10 +67,10 @@ public class AuctionView {
         try{
             response = AuctionController.getAuction(idTicket, true);
         } catch (NodeUnavailableException e){
-            System.out.println("[AUCTION VIEW] Impossible to get auction");
+            System.out.println("[AUCTION VIEW] Impossible to get auction from ticket");
             return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            System.out.println("[AUCTION VIEW] Impossible to get auction because auction doesn't exists");
+            System.out.println("[AUCTION VIEW] Impossible to get auction from ticket because auction doesn't exists");
             return new ResponseEntity<>(null , HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(response);
@@ -100,10 +99,9 @@ public class AuctionView {
             result = AuctionController.getAuctionHistory(auctionID);
         } catch (Exception e){
         System.out.println("[AUCTION VIEW] Impossible to get auction history");
-            return new ResponseEntity<>("NOT_FOUNT" , HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("NOT_FOUND" , HttpStatus.NOT_FOUND);
 
         }
-        System.out.println("RESULT " + result);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

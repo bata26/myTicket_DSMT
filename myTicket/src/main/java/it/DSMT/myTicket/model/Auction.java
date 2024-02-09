@@ -119,7 +119,6 @@ public class Auction {
             for (JsonElement row : values) {
                 auctions.add(Auction.parseQueryResultForActiveAuction(row));
             }
-            System.out.println("ACTIVE : " + auctions);
             return auctions;
         }
         return null;
@@ -132,9 +131,6 @@ public class Auction {
     }
 
     private static ActiveAuctionDTO parseQueryResultForActiveAuction(JsonElement element) {
-        System.out.println("elem : " + element);
-        // id | title| date | hour | city | owner_id | artist | id | final_bid |
-        // ticket_id | winner_id
         int ticketID = element.getAsJsonArray().get(0).getAsInt();
         String title = element.getAsJsonArray().get(1).getAsString();
 
@@ -152,12 +148,10 @@ public class Auction {
 
         ActiveAuctionDTO auction = new ActiveAuctionDTO(auctionID, ticketID, ownerID, title, date, hour, city, artist,
                 finalBid, winnerID);
-        System.out.println("AUCTION ACTIVE : " + auction.toString());
         return new ActiveAuctionDTO(auctionID, ticketID, ownerID, title, date, hour, city, artist, finalBid, winnerID);
     }
 
     private static Auction parseQueryResult(JsonElement element) {
-        System.out.println("elem : " + element);
         int id = element.getAsJsonArray().get(0).getAsInt();
         int final_bid = element.getAsJsonArray().get(1).getAsInt();
         int ticket_id = element.getAsJsonArray().get(2).getAsInt();

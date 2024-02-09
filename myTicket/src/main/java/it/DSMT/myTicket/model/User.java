@@ -30,7 +30,6 @@ public class User {
 
     public int login() throws  NodeUnavailableException{
         QueryResults res = DbController.getInstance().getConnection().Query("SELECT * FROM user where username = '" + this.username + "' and password = '" + this.password + "'" , Rqlite.ReadConsistencyLevel.STRONG);
-        System.out.println("RES : " + res.results[0]);
 
         if (res != null && res.results != null && res.results.length > 0) {
             QueryResults.Result result = res.results[0];

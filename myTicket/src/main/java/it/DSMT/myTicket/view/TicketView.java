@@ -50,7 +50,7 @@ public class TicketView {
         try{
             response.setTickets(TicketController.searchTicket(title));
         } catch (NodeUnavailableException e){
-            System.out.println("[TICKET VIEW] Impossible to remove ticket");
+            System.out.println("[TICKET VIEW] Impossible to search ticket");
             return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok(response);
@@ -62,7 +62,7 @@ public class TicketView {
         try{
             response.setTickets(TicketController.searchTicket(""));
         } catch (NodeUnavailableException e){
-            System.out.println("[TICKET VIEW] Impossible to remove ticket");
+            System.out.println("[TICKET VIEW] Impossible to fetch all ticket");
             return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok(response);
@@ -74,10 +74,10 @@ public class TicketView {
         try{
             response.setTickets(TicketController.getActiveTickets());
         } catch (NodeUnavailableException e){
-            System.out.println("[AUCTION VIEW] Impossible to get active auction");
+            System.out.println("[TICKET VIEW] Impossible to get active tickets");
             return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
         }catch (Exception e){
-            System.out.println("[TICKET VIEW] Impossible to fetch ticket");
+            System.out.println("[TICKET VIEW] Impossible to get active tickets");
             return new ResponseEntity<>(null , HttpStatus.NO_CONTENT);
         }
         return ResponseEntity.ok(response);
@@ -89,10 +89,10 @@ public class TicketView {
         try{
             ticket = TicketController.getOneTicket(idTicket);
         } catch (NodeUnavailableException e){
-            System.out.println("[TICKET VIEW] Impossible to remove ticket");
+            System.out.println("[TICKET VIEW] Impossible to get ticket from ticket id");
             return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            System.out.println("[TICKET VIEW] Impossible to remove ticket because ticket doesn't exists");
+            System.out.println("[TICKET VIEW] Impossible to get ticket because ticket doesn't exists");
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(ticket);
@@ -104,10 +104,10 @@ public class TicketView {
         try{
             response.setTickets(TicketController.getOwnedTicket(userID));
         } catch (NodeUnavailableException e){
-            System.out.println("[TICKET VIEW] Impossible to fetch ticket");
+            System.out.println("[TICKET VIEW] Impossible to fetch ticket from user id");
             return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
         }catch (Exception e){
-            System.out.println("[TICKET VIEW] Impossible to fetch ticket");
+            System.out.println("[TICKET VIEW] Impossible to fetch ticket from user id");
             return new ResponseEntity<>(null , HttpStatus.NO_CONTENT);
         }
         return ResponseEntity.ok(response);
@@ -119,10 +119,10 @@ public class TicketView {
         try{
             response.setTickets(TicketController.getWinnedTicket(userID));
         } catch (NodeUnavailableException e){
-            System.out.println("[TICKET VIEW] Impossible to fetch ticket");
+            System.out.println("[TICKET VIEW] Impossible to fetch winned ticket");
             return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
         }catch (Exception e){
-            System.out.println("[TICKET VIEW] Impossible to fetch ticket");
+            System.out.println("[TICKET VIEW] Impossible to fetch winned ticket");
             return new ResponseEntity<>(null , HttpStatus.NO_CONTENT);
         }
         return ResponseEntity.ok(response);
@@ -134,7 +134,6 @@ public class TicketView {
         try{
             response.setTickets(TicketController.getClosedTickets());
         } catch (NodeUnavailableException e){
-            System.out.println("[AUCTION VIEW] Impossible to get active auction");
             return new ResponseEntity<>(null , HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok(response);

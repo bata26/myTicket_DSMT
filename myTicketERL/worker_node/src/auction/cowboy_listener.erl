@@ -5,7 +5,7 @@
 
 
 start_link() ->
-	io:format("[cowboy_listener] start_link~n"),
+	io:format("[COWBOY LISTENER] start_link~n"),
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 
@@ -16,7 +16,7 @@ init(_) ->
 	% Read endpoint and port from configuration file
 	{ok, Url} = application:get_env(ws, endpoint),
 	{ok, Port} = application:get_env(ws, port),
-	io:format("[cowboy_listener] init => Start listener on endpoint ~p and port ~p~n", [Url, Port]),
+	io:format("[COWBOY LISTENER] init => Start listener on endpoint ~p and port ~p~n", [Url, Port]),
 
 	% Compile the route for the websocket handler
 	Dispatch = cowboy_router:compile([
@@ -29,7 +29,7 @@ init(_) ->
 		[{port, Port}],
 		#{env => #{dispatch => Dispatch}}
 	),
-	io:format("[cowboy_listener] init => cowboy is listening from process ~p~n", [Pid]),
+	io:format("[COWBOY LISTENER] init => cowboy is listening from process ~p~n", [Pid]),
 	{ok, []}.
 
 

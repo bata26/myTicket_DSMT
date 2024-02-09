@@ -215,7 +215,6 @@
 
             // Formatta la data nel tuo formato desiderato
             var formattedDate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
-            console.log("formattedDate : ", formattedDate);
             // Invia dati al server dopo l'apertura della connessione
             body = {
                 "opcode": "BID",
@@ -230,10 +229,8 @@
 
         socket.addEventListener('message', function (event) {
             var data = event.data;
-            console.log(new Date(), 'Dati ricevuti:', data);
 
             if (data == "OK") {
-                console.log(body);
                 var bidListElement = document.getElementById("bid-list");
                 var nuovoDiv = document.createElement("div");
                 let convertedTS = new Date(body.ts);
@@ -289,7 +286,6 @@
             var data = event.data;
             if (data == "[]") return;
             if (JSON.parse(data)["opcode"] == "RECV BID") {
-                console.log("receivedBID: ", data);
                 addBid(JSON.parse(data));
             } else if (JSON.parse(data)["opcode"] == "END BID") {
                 let parsedRes = JSON.parse(data);
@@ -303,7 +299,6 @@
             } else {
                 let cleanedData = data.replace("{", "");
                 cleanedData = cleanedData.replace("}", "");
-                console.log("CLEANED ", cleanedData);
                 let valueList = cleanedData.split(",");
 
                 let res = [];
@@ -313,7 +308,6 @@
                 }
 
                 res.forEach((item) => { addBid(item) });
-                console.log("RES : ", res);
             }
 
         });

@@ -12,8 +12,7 @@
 start(_StartType, _StartArgs) ->
     mnesia:start(),
     ok = mnesia:wait_for_tables([auction], 300000),
-    io:format("[chat_server_app] start => mnesia is ready~n"),
-    % Start supervisor
+    io:format("[WORKER NODE] start => mnesia is ready~n"),
     worker_node_sup:start_link().
 
 stop(_State) ->

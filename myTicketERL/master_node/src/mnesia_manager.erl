@@ -4,9 +4,9 @@
 
 -record(auction, {auction_id, owner_id, timer}).
 -record(bid, {auction_id, user_id, username, amount, ts}).
+
 create_auction(UserID, AuctionID) ->
     mnesia:transaction(fun() ->
-        %% Inserisci il record nella tabella
         mnesia:write({auction, AuctionID, UserID, -1})
     end).
 
@@ -15,5 +15,5 @@ get_auction_history(AuctionID) ->
         mnesia:match_object({bid, AuctionID, '_', '_', '_', '_'})
     end,
     {atomic, Result} = mnesia:transaction(Fun),
-    io:format("[mnesia_manager] get_online_students => Online students: ~p~n", [Result]),
+    io:format("[MASTER MNESIA MANAGER] get_auction_history => BIDS: ~p~n", [Result]),
     Result.
