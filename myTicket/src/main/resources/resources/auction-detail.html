@@ -21,12 +21,14 @@
                 document.getElementById("addLink").style.display = "block";
                 document.getElementById("profileLink").style.display = "block";
                 document.getElementById("oldAuctionLink").style.display = "block";
+                document.getElementById("logoutLink").style.display = "block";
                 document.getElementById("loginLink").style.display = "none";
             } else {
                 document.getElementById("ticketLink").style.display = "none";
                 document.getElementById("profileLink").style.display = "none";
                 document.getElementById("addLink").style.display = "none";
                 document.getElementById("oldAuctionLink").style.display = "none";
+                document.getElementById("logoutLink").style.display = "none";
                 document.getElementById("loginLink").style.display = "block";
             }
         });
@@ -104,11 +106,14 @@
                     <li id="profileLink" class="nav-item" style="display: none;">
                         <a class="nav-link active" aria-current="page" href="profile.html">Profile</a>
                     </li>
-                    <li class="nav-item" id="addLink">
+                    <li class="nav-item" id="addLink" style="display: none;">
                         <a id="addLink" class="nav-link active" aria-current="page" href="addticket.html">Add</a>
                     </li>
                     <li id="loginLink" class="nav-item" style="display: none;">
                         <a class="nav-link active" aria-current="page" href="login.html">Login</a>
+                    </li>
+                    <li id="logoutLink" class="nav-item" style="display: none;">
+                        <a class="nav-link active" aria-current="page" href="logout.html">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -226,7 +231,7 @@
         socket.addEventListener('message', function (event) {
             var data = event.data;
             console.log(new Date(), 'Dati ricevuti:', data);
-            
+
             if (data == "OK") {
                 console.log(body);
                 var bidListElement = document.getElementById("bid-list");
@@ -237,7 +242,7 @@
                 nuovoDiv.innerHTML += "<b>" + body.amount + "</b><br>";
                 nuovoDiv.innerHTML += "<hr>";
                 bidListElement.appendChild(nuovoDiv);
-            }else if(JSON.parse(data)["res"] == "CANT BID"){
+            } else if (JSON.parse(data)["res"] == "CANT BID") {
                 alert("You can't bid on your own ticket");
             }
         });

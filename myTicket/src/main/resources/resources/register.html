@@ -13,7 +13,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Controlla se il flag nel localStorage è impostato
-            var isLoggedIn = localStorage.getItem("loggedIn");
+            var isLoggedIn = localStorage.getItem("isLoggedIn");
 
             // Se l'utente è loggato, mostra il link del profilo, altrimenti mostra il link di accesso
             if (isLoggedIn) {
@@ -21,14 +21,12 @@
                 document.getElementById("addLink").style.display = "block";
                 document.getElementById("profileLink").style.display = "block";
                 document.getElementById("oldAuctionLink").style.display = "block";
-                document.getElementById("logoutLink").style.display = "block";
                 document.getElementById("loginLink").style.display = "none";
             } else {
                 document.getElementById("ticketLink").style.display = "none";
                 document.getElementById("profileLink").style.display = "none";
                 document.getElementById("addLink").style.display = "none";
                 document.getElementById("oldAuctionLink").style.display = "none";
-                document.getElementById("logoutLink").style.display = "none";
                 document.getElementById("loginLink").style.display = "block";
             }
         });
@@ -56,55 +54,37 @@
                     <li id="profileLink" class="nav-item" style="display: none;">
                         <a class="nav-link active" aria-current="page" href="profile.html">Profile</a>
                     </li>
-                    <li class="nav-item" id="addLink" style="display: none;">
+                    <li class="nav-item" id="addLink">
                         <a id="addLink" class="nav-link active" aria-current="page" href="addticket.html">Add</a>
                     </li>
                     <li id="loginLink" class="nav-item" style="display: none;">
                         <a class="nav-link active" aria-current="page" href="login.html">Login</a>
-                    </li>
-                    <li id="logoutLink" class="nav-item" style="display: none;">
-                        <a class="nav-link active" aria-current="page" href="logout.html">Logout</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
     <br>
-    <div class="container text-center">
-        <h1> Insert new ticket </h1>
-    </div>
     <br>
     <br>
-    <div class="container" id="add-container">
+    <br>
+    <br>
+    <div class="container">
         <div class="row">
             <div class="col-2">
             </div>
-            <div class="col-8" id="home-main-col">
-                <form class="shadow-lg p-3 mb-5 bg-body-tertiary rounded" id="add-form">
+            <div class="col-8">
+                <form class="shadow-lg p-3 mb-5 bg-body-tertiary rounded" id="login-form">
                     <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="add-title">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">City</label>
-                        <input type="text" class="form-control" id="add-city">
+                        <label for="exampleInputEmail1" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="login-username">
+                        <div id="emailHelp" class="form-text">We'll never share your username with anyone else.</div>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Artist</label>
-                        <input type="text" class="form-control" id="add-artist">
+                        <label for="exampleInputPassword1" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="login-password">
                     </div>
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Hour</label>
-                        <input type="number" class="form-control" id="add-hour">
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="add-date">
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary text-center" style="width: 100%;">Submit</button>
-
-                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
                 </form>
             </div>
             <div class="col-2">
@@ -112,35 +92,32 @@
         </div>
     </div>
 </body>
-<script>
-    const FORM_ID = "add-form";
-    const ADD_TICKET_ENDPOINT = "http://10.2.1.116:80/ticket";
 
-    document.getElementById(FORM_ID).addEventListener("submit", function (event) {
+</html>
+
+<script>
+    const loginFormID = "login-form";
+    const LOGIN_ENDPOINT = "http://10.2.1.116:80/register"
+    document.getElementById(loginFormID).addEventListener("submit", function (event) {
         event.preventDefault();
 
         const jsonData = {
-            "ownerID": parseInt(localStorage.getItem("userID")),
-            "title": document.getElementById("add-title").value ,
-            "date": document.getElementById("add-date").value ,
-            "hour": parseInt(document.getElementById("add-hour").value) ,
-            "city": document.getElementById("add-city").value ,
-            "artist": document.getElementById("add-artist").value 
+            "username" : document.getElementById("login-username").value,
+            "password" : document.getElementById("login-password").value,
         }
 
-        console.log("JSON : " , jsonData);
-
         // Make Axios request
-        axios.post(ADD_TICKET_ENDPOINT, jsonData)
+        axios.post(LOGIN_ENDPOINT, jsonData)
             .then(response => {
                 console.log("Success:", response.data);
-                //window.location.href = "home.html";
+                localStorage.setItem("loggedIn" , true);
+                localStorage.setItem("userID" , response.data["userID"]);
+                localStorage.setItem("username" , document.getElementById("login-username").value);
+                window.location.href = "home.html";
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert("Impossble to add ticket");
+                alert("Impossble to log in");
             });
     });
 </script>
-
-</html>
