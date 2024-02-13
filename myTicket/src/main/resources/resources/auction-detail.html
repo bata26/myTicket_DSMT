@@ -277,7 +277,7 @@
                 "opcode": "JOIN",
                 "auctionID": parseInt(localStorage.getItem("auctionID")),
                 "userID": parseInt(localStorage.getItem("userID")),
-                "username": "bata"
+                "username": localStorage.getItem("username")
             }
             socket.send(JSON.stringify(body));
         });

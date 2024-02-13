@@ -96,7 +96,8 @@ start_mnesia(Nodes) when is_list(Nodes) ->
         [
             {attributes, record_info(fields, users)},
             {type, bag},
-            {ram_copies, Nodes}
+            {ram_copies, Nodes},
+            {disc_copies, node()}
         ]
     ),
     Result3 = mnesia:create_table(
@@ -104,7 +105,8 @@ start_mnesia(Nodes) when is_list(Nodes) ->
         [
             {attributes, record_info(fields, auction)},
             {type, bag},
-            {ram_copies, Nodes}
+            {ram_copies, Nodes},
+            {disc_copies, node()}
         ]
     ),
     Result4 = mnesia:create_table(
@@ -112,7 +114,8 @@ start_mnesia(Nodes) when is_list(Nodes) ->
         [
             {attributes, record_info(fields, bid)},
             {type, bag},
-            {ram_copies, Nodes}
+            {ram_copies, Nodes},
+            {disc_copies, node()}
         ]
     ),
     io:format("[MASTER NODE] start_mnesia => create_table result: ~p~n", [Result2]),
